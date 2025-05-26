@@ -11,6 +11,7 @@
 using Piranha.Cache;
 using Piranha.Services;
 using Piranha.Repositories;
+using Piranha.Events;
 
 namespace Piranha;
 
@@ -120,6 +121,7 @@ public sealed class Api : IApi, IDisposable
         IPostTypeRepository postTypeRepository,
         ISiteRepository siteRepository,
         ISiteTypeRepository siteTypeRepository,
+        IEventBus eventBus,
         ICache cache = null,
         IStorage storage = null,
         IImageProcessor processor = null,
@@ -142,7 +144,7 @@ public sealed class Api : IApi, IDisposable
         Sites = new SiteService(siteRepository, contentFactory, Languages,cache);
         Aliases = new AliasService(aliasRepository, Sites, cache);
         Media = new MediaService(mediaRepository, Params, storage, processor, cache);
-        Pages = new PageService(pageRepository, contentFactory, Sites, Params, Media, cache, search);
+        Pages = new PageService(pageRepository, contentFactory, Sites, Params, Media, eventBus, cache, search);
         Posts = new PostService(postRepository, contentFactory, Sites, Pages, Params, Media, cache, search);
         Archives = new ArchiveService(archiveRepository, Params, Posts);
     }

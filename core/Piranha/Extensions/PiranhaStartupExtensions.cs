@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Piranha;
 using Piranha.Models;
 using Piranha.Services;
+using Piranha.Events;
 
 public static class PiranhaStartupExtensions
 {
@@ -23,6 +24,7 @@ public static class PiranhaStartupExtensions
         options?.Invoke(serviceBuilder);
 
         services.AddSingleton<IContentFactory, ContentFactory>();
+        services.AddSingleton<IEventBus, EventBus>();
 
         services.AddScoped<IApi, Api>();
         services.AddScoped<Config>();

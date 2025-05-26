@@ -24,6 +24,7 @@ internal sealed class PageService : IPageService
     private readonly IMediaService _mediaService;
     private readonly ICache _cache;
     private readonly ISearch _search;
+    private readonly IEventBus _eventBus;
 
     /// <summary>
     /// Default constructor.
@@ -33,10 +34,11 @@ internal sealed class PageService : IPageService
     /// <param name="siteService">The site service</param>
     /// <param name="paramService">The param service</param>
     /// <param name="mediaService">The media service</param>
+    /// <param name="eventBus">The event bus service</param>
     /// <param name="cache">The optional model cache</param>
     /// <param name="search">The optional content search</param>
     public PageService(IPageRepository repo, IContentFactory factory, ISiteService siteService,
-        IParamService paramService, IMediaService mediaService, ICache cache = null, ISearch search = null)
+        IParamService paramService, IMediaService mediaService, IEventBus eventBus, ICache cache = null, ISearch search = null)
     {
         _repo = repo;
         _factory = factory;
@@ -44,6 +46,7 @@ internal sealed class PageService : IPageService
         _paramService = paramService;
         _mediaService = mediaService;
         _search = search;
+        _eventBus = eventBus;
 
         if ((int)App.CacheLevel > 2)
         {
@@ -742,6 +745,30 @@ internal sealed class PageService : IPageService
         {
             await _siteService.InvalidateSitemapAsync(model.SiteId).ConfigureAwait(false);
         }
+
+        // Emit domain event after successful save
+        if (!isDraft)
+        {
+            if (current == null)
+            {
+                // New page
+                _eventBus.Publish(new PageCreatedEvent
+                {
+                    PageId = model.Id,
+                    Title = model.Title
+                });
+            }
+            else
+            {
+                // Updated page
+                _eventBus.Publish(new PageUpdatedEvent
+                {
+                    PageId = model.Id,
+                    Title = model.Title
+                });
+            }
+        }
+
     }
 
     /// <summary>
