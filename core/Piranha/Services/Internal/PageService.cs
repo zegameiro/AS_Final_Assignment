@@ -752,19 +752,25 @@ internal sealed class PageService : IPageService
             if (current == null)
             {
                 // New page
-                _eventBus.Publish(new PageCreatedEvent
+                _eventBus.Publish(new Event
                 {
-                    PageId = model.Id,
-                    Title = model.Title
+                    Id = new Guid(),
+                    Type = EventType.Page,
+                    Status = EventStatus.Create,
+                    CreatedAt = DateTime.Now,
+                    ContentId = model.Id,
                 });
             }
             else
             {
                 // Updated page
-                _eventBus.Publish(new PageUpdatedEvent
+                _eventBus.Publish(new Event
                 {
-                    PageId = model.Id,
-                    Title = model.Title
+                    Id = new Guid(),
+                    Type = EventType.Page,
+                    Status = EventStatus.Update,
+                    CreatedAt = DateTime.Now,
+                    ContentId = model.Id,
                 });
             }
         }

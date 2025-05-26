@@ -1,4 +1,4 @@
 public interface IEventBus
 {
-    void Publish<T>(T @event);
+    void Publish(Event @event);
 }

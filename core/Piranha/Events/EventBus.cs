@@ -4,10 +4,10 @@ namespace Piranha.Events
 {
     public class EventBus : IEventBus
     {
-        public void Publish<T>(T @event)
+        public void Publish(Event @event)
         {
             // Basic console output for development/debugging
-            Console.WriteLine($"[EVENT PUBLISHED] Type: {typeof(T).Name}");
+            Console.WriteLine($"[EVENT PUBLISHED] Type: {@event.Type.ToString()}");
             Console.WriteLine($"Event Data: {@event}");
             Console.WriteLine($"Published at: {DateTime.UtcNow}");
         }
