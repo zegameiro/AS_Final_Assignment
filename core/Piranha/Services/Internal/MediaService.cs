@@ -23,6 +23,7 @@ internal sealed class MediaService : IMediaService
     private readonly IStorage _storage;
     private readonly IImageProcessor _processor;
     private readonly ICache _cache;
+    private readonly IEventBus _eventBus;
     private static readonly object ScaleMutex = new object();
     private const string MEDIA_STRUCTURE = "MediaStructure";
 
@@ -34,13 +35,15 @@ internal sealed class MediaService : IMediaService
     /// <param name="storage">The current storage manager</param>
     /// <param name="cache">The optional model cache</param>
     /// <param name="processor">The optional image processor</param>
-    public MediaService(IMediaRepository repo, IParamService paramService, IStorage storage, IImageProcessor processor = null, ICache cache = null)
+    /// <param name="eventBus">The event Bus</param>
+    public MediaService(IMediaRepository repo, IEventBus eventBus, IParamService paramService, IStorage storage, IImageProcessor processor = null, ICache cache = null)
     {
         _repo = repo;
         _paramService = paramService;
         _storage = storage;
         _processor = processor;
         _cache = cache;
+        _eventBus = eventBus;
     }
 
     //Separated this into its own thing in case it needed to get reused elsewhere.
@@ -207,6 +210,7 @@ internal sealed class MediaService : IMediaService
         }
 
         Media model = null;
+        bool isNew = false;
 
         if (content.Id.HasValue)
         {
@@ -215,6 +219,7 @@ internal sealed class MediaService : IMediaService
 
         if (model == null)
         {
+            isNew = true;
             model = new Media()
             {
                 Id = model != null || content.Id.HasValue ? content.Id.Value : Guid.NewGuid(),
@@ -282,6 +287,21 @@ internal sealed class MediaService : IMediaService
             await session.PutAsync(model, model.Filename,
                 model.ContentType, stream).ConfigureAwait(false);
         }
+
+        EventStatus status = EventStatus.Update;
+        if (isNew)
+        {
+            status = EventStatus.Create;
+        }
+
+        _eventBus.Publish(new Event
+        {
+            Id = new Guid(),
+            Type = EventType.Media,
+            Status = status,
+            CreatedAt = DateTime.Now,
+            ContentId = model.Id,
+        });
 
         App.Hooks.OnBeforeSave(model);
         await _repo.Save(model).ConfigureAwait(false);
@@ -487,6 +507,15 @@ internal sealed class MediaService : IMediaService
             }
             await RemoveFromCache(media).ConfigureAwait(false);
             await RemoveStructureFromCache().ConfigureAwait(false);
+
+            _eventBus.Publish(new Event
+            {
+                Id = new Guid(),
+                Type = EventType.Media,
+                Status = EventStatus.Delete,
+                CreatedAt = DateTime.Now,
+                ContentId = media.Id,
+            });
         }
     }
 
