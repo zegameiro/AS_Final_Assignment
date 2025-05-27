@@ -8,7 +8,7 @@ namespace Piranha.Events
         {
             // Basic console output for development/debugging
             Console.WriteLine($"[EVENT PUBLISHED] Type: {@event.Type.ToString()}");
-            Console.WriteLine($"Event Data: {@event}");
+            Console.WriteLine($"Event Status: {@event.Status}");
             Console.WriteLine($"Published at: {DateTime.UtcNow}");
         }
     }
