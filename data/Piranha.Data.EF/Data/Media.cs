@@ -48,6 +48,7 @@ public sealed class Media : Models.MediaBase
             Height = m.Height,
             Created = m.Created,
             LastModified = m.LastModified,
+            Tags = m.Tags,
             Versions = m.Versions.Select(v => new Models.MediaVersion
             {
                 Id = v.Id,
@@ -77,6 +78,7 @@ public sealed class Media : Models.MediaBase
             Height = m.Height,
             Created = m.Created,
             LastModified = m.LastModified,
+            Tags = m.Tags,
             Versions = m.Versions.Select(v => new MediaVersion
             {
                 Id = v.Id,

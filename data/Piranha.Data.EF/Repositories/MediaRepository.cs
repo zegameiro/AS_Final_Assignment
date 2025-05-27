@@ -147,6 +147,7 @@ internal class MediaRepository : IMediaRepository
     /// <param name="model">The model to save</param>
     public async Task Save(Models.Media model)
     {
+        Console.WriteLine("Saving model With tags:" + model.Tags);
         var media = await _db.Media
             .Include(m => m.Versions)
             .FirstOrDefaultAsync(m => m.Id == model.Id)
@@ -174,6 +175,7 @@ internal class MediaRepository : IMediaRepository
         media.Description = model.Description;
         media.Properties = Media.SerializeProperties(model.Properties);
         media.LastModified = DateTime.Now;
+        media.Tags = model.Tags;
 
         // Delete removed versions
         var current = model.Versions.Select(v => v.Id).ToArray();

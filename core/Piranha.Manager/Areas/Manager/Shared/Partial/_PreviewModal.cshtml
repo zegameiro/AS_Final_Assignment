@@ -130,6 +130,10 @@
                                     <th><span class="d-block mt-1">@Localizer.General["Description"]</span></th>
                                     <td><textarea rows="5" class="form-control form-control-sm" v-model="media.description"></textarea></td>
                                 </tr>
+                                <tr>
+                                    <th><span class="d-block mt-1">@Localizer.General["Tags"]</span></th>
+                                    <td><input type="text" class="form-control form-control-sm" v-model="media.tags"></td>
+                                </tr>
                                 <tr v-for="property in media.properties">
                                     <th><span class="d-block mt-1">{{ property.key }}</span></th>
                                     <td><input type="text"class="form-control form-control-sm" v-model="property.value"></td>

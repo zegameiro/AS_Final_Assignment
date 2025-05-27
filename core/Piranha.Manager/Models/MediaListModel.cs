@@ -120,6 +120,8 @@ public class MediaListModel
         /// Gets/sets the last modification date.
         /// </summary>
         public string LastModified { get; set; }
+
+        public string Tags { get; set; }
     }
 
     /// <summary>

@@ -223,7 +223,7 @@ internal sealed class MediaService : IMediaService
             model = new Media()
             {
                 Id = model != null || content.Id.HasValue ? content.Id.Value : Guid.NewGuid(),
-                Created = DateTime.Now
+                Created = DateTime.Now,Tags="banana"
             };
             content.Id = model.Id;
         }
@@ -288,12 +288,12 @@ internal sealed class MediaService : IMediaService
                 model.ContentType, stream).ConfigureAwait(false);
         }
 
+        // Publish in event bus
         EventStatus status = EventStatus.Update;
         if (isNew)
         {
             status = EventStatus.Create;
         }
-
         _eventBus.Publish(new Event
         {
             Id = new Guid(),

@@ -49,7 +49,8 @@ piranha.preview = new Vue({
                 title: media.title,
                 altText: media.altText,
                 description: media.description,
-                properties: media.properties
+                properties: media.properties,
+                tags: media.tags,
             };
 
             fetch(piranha.baseUrl + "manager/api/media/meta/save", {

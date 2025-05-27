@@ -49,6 +49,7 @@ public class MediaService
             Title = media.Title,
             AltText = media.AltText,
             Description = media.Description,
+            Tags = media.Tags,
             Properties = media.Properties.ToArray().OrderBy(p => p.Key).ToList(),
             Size = Utils.FormatByteSize(media.Size),
             Width = media.Width,
@@ -164,6 +165,7 @@ public class MediaService
                 Title = m.Title,
                 AltText = m.AltText,
                 Description = m.Description,
+                Tags = m.Tags,
                 Properties = m.Properties.ToArray().OrderBy(p => p.Key).ToList(),
                 Size = Utils.FormatByteSize(m.Size),
                 Width = m.Width,
@@ -274,6 +276,7 @@ public class MediaService
             model.Title = media.Title;
             model.AltText = media.AltText;
             model.Description = media.Description;
+            model.Tags = media.Tags;
 
             foreach (var property in media.Properties)
             {

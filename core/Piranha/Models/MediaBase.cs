@@ -93,4 +93,6 @@ public abstract class MediaBase
     /// Gets/sets the last modification date.
     /// </summary>
     public DateTime LastModified { get; set; }
+
+    public string Tags { get; set; }
 }
