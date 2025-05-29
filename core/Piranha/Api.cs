@@ -121,7 +121,7 @@ public sealed class Api : IApi, IDisposable
         IPostTypeRepository postTypeRepository,
         ISiteRepository siteRepository,
         ISiteTypeRepository siteTypeRepository,
-        IEventBus eventBus,
+        EventBus eventBus,
         ICache cache = null,
         IStorage storage = null,
         IImageProcessor processor = null,

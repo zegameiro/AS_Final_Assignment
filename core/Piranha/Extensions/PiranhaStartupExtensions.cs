@@ -24,7 +24,9 @@ public static class PiranhaStartupExtensions
         options?.Invoke(serviceBuilder);
 
         services.AddSingleton<IContentFactory, ContentFactory>();
-        services.AddSingleton<IEventBus, EventBus>();
+        services.AddSingleton<EventBus>(sp => EventBus.CreateAsync().GetAwaiter().GetResult());
+
+        services.AddHostedService<EventConsumer>();
 
         services.AddScoped<IApi, Api>();
         services.AddScoped<Config>();

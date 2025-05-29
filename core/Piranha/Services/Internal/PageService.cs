@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using Piranha.Cache;
 using Piranha.Models;
 using Piranha.Repositories;
+using Piranha.Events;
 
 namespace Piranha.Services;
 
@@ -24,7 +25,7 @@ internal sealed class PageService : IPageService
     private readonly IMediaService _mediaService;
     private readonly ICache _cache;
     private readonly ISearch _search;
-    private readonly IEventBus _eventBus;
+    private readonly EventBus _eventBus;
 
     /// <summary>
     /// Default constructor.
@@ -38,7 +39,7 @@ internal sealed class PageService : IPageService
     /// <param name="cache">The optional model cache</param>
     /// <param name="search">The optional content search</param>
     public PageService(IPageRepository repo, IContentFactory factory, ISiteService siteService,
-        IParamService paramService, IMediaService mediaService, IEventBus eventBus, ICache cache = null, ISearch search = null)
+        IParamService paramService, IMediaService mediaService, EventBus eventBus, ICache cache = null, ISearch search = null)
     {
         _repo = repo;
         _factory = factory;
@@ -752,7 +753,7 @@ internal sealed class PageService : IPageService
             if (current == null)
             {
                 // New page
-                _eventBus.Publish(new Event
+                await _eventBus.Publish(new Event
                 {
                     Id = new Guid(),
                     Type = EventType.Page,
@@ -764,7 +765,7 @@ internal sealed class PageService : IPageService
             else
             {
                 // Updated page
-                _eventBus.Publish(new Event
+                await _eventBus.Publish(new Event
                 {
                     Id = new Guid(),
                     Type = EventType.Page,
