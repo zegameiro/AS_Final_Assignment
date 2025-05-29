@@ -221,6 +221,8 @@ public abstract class Db<T> : DbContext, IDb where T : Db<T>
     /// </summary>
     public DbSet<Data.Taxonomy> Taxonomies { get; set; }
 
+    public DbSet<Models.Subscription> Subscriptions { get; set; }
+
     /// <summary>
     /// Default constructor.
     /// </summary>
@@ -454,6 +456,15 @@ public abstract class Db<T> : DbContext, IDb where T : Db<T>
         mb.Entity<Data.Taxonomy>().Property(t => t.Title).IsRequired().HasMaxLength(64);
         mb.Entity<Data.Taxonomy>().Property(t => t.Slug).IsRequired().HasMaxLength(64);
         mb.Entity<Data.Taxonomy>().HasIndex(t => new { t.GroupId, t.Type, t.Slug }).IsUnique();
+
+        mb.Entity<Models.Subscription>().ToTable("Piranha_Subscriptions");
+        mb.Entity<Models.Subscription>().ToTable("Piranha_Subscriptions");
+        mb.Entity<Models.Subscription>().Property(s => s.Id).IsRequired().HasMaxLength(64);
+        mb.Entity<Models.Subscription>().Property(s => s.EventType).IsRequired().HasMaxLength(64);
+        mb.Entity<Models.Subscription>().Property(s => s.Filter).HasMaxLength(256);
+        mb.Entity<Models.Subscription>().Property(s => s.CallbackUrl).IsRequired().HasMaxLength(256);
+        mb.Entity<Models.Subscription>().Property(s => s.Created).IsRequired();
+        mb.Entity<Models.Subscription>().HasIndex(s => new { s.EventType, s.Filter }).IsUnique();
     }
 
     /// <summary>

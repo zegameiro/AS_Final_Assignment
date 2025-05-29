@@ -89,6 +89,14 @@ public static class Menu
                     Route = "~/manager/modules",
                     Policy = Permission.Modules,
                     Css = "fas fa-code-branch"
+                },
+                new MenuItem
+                {
+                    InternalId = "Subscriptions",
+                    Name = "Subscriptions",
+                    Route = "~/manager/subscriptions",
+                    Policy = Permission.Admin,
+                    Css = "fas fa-bell"
                 }
             }
         }

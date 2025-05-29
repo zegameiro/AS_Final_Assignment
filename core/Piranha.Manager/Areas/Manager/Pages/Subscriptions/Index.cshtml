@@ -1,0 +1,36 @@
+@page
+@model Piranha.Manager.Areas.Manager.Pages.Subscriptions.IndexModel
+@{
+    ViewData["Title"] = "Subscriptions";
+}
+
+<h1>Subscriptions</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Event Type</th>
+            <th>Callback Url</th>
+            <th>Filter</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var sub in Model.Subscriptions)
+    {
+        <tr>
+            <td>@sub.Id</td>
+            <td>@sub.EventType</td>
+            <td>@sub.CallbackUrl</td>
+            <td>@sub.Filter</td>
+            <td>
+                <form asp-page-handler="Delete" method="post">
+                    <input type="hidden" name="id" value="@sub.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
