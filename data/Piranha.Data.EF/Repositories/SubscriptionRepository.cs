@@ -70,8 +70,10 @@ namespace Piranha.Repositories
         {
             if (subscription.Id == Guid.Empty)
             {
+                Console.WriteLine("Adding new subscription in Repository.");
                 subscription.Id = Guid.NewGuid();
                 _db.Subscriptions.Add(subscription);
+                Console.WriteLine("Subscription added with success in Repository.");
                 
             }
             else

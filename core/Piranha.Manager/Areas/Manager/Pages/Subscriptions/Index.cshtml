@@ -1,36 +1,122 @@
-@page
+@page "~/manager/subscriptions"
 @model Piranha.Manager.Areas.Manager.Pages.Subscriptions.IndexModel
+@inject ManagerLocalizer Localizer
 @{
-    ViewData["Title"] = "Subscriptions";
+    ViewBag.Title = "Subscriptions";
+    ViewBag.MenuItem = "Subscriptions";
 }
 
-<h1>Subscriptions</h1>
+@section script {
+    <script>
+        $(function () {
+            $('#addModal').on('shown.bs.modal', function () {
+                $('#EventType').trigger('focus');
+            });
+        });
+    </script>
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Event Type</th>
-            <th>Callback Url</th>
-            <th>Filter</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var sub in Model.Subscriptions)
-    {
-        <tr>
-            <td>@sub.Id</td>
-            <td>@sub.EventType</td>
-            <td>@sub.CallbackUrl</td>
-            <td>@sub.Filter</td>
-            <td>
-                <form asp-page-handler="Delete" method="post">
-                    <input type="hidden" name="id" value="@sub.Id" />
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+<div id="subscriptions">
+    <div class="top">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">@Localizer.Menu["System"]</li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewBag.Title</li>
+            </ol>
+        </nav>
+        <div class="container-fluid">
+            <div class="top-nav">
+                <form method="post" asp-page-handler="DeleteAll" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> @Localizer.General["Delete All"]
+                    </button>
                 </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
+                    <i class="fas fa-plus"></i> @Localizer.General["Add"]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app ready">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <table class="table table-borderless table-hover">
+                        <thead>
+                            <tr>
+                                <th class="w-25">Event Type</th>
+                                <th class="w-25">Callback Url</th>
+                                <th class="w-25">Filter</th>
+                                <th class="w-25">Id</th>
+                                <th class="actions one"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @if (!Model.Subscriptions.Any())
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No subscriptions found.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var sub in Model.Subscriptions)
+                            {
+                                <tr>
+                                    <td>@sub.EventType</td>
+                                    <td>@sub.CallbackUrl</td>
+                                    <td>@sub.Filter</td>
+                                    <td class="text-monospace small">@sub.Id</td>
+                                    <td class="actions one">
+                                        <form asp-page-handler="Delete" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@sub.Id" />
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Subscription Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" asp-page-handler="Add">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addModalLabel">Add Subscription</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Event Type</label>
+                <input type="text" name="EventType" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label>Callback Url</label>
+                <input type="url" name="CallbackUrl" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label>Filter</label>
+                <input type="text" name="Filter" class="form-control" />
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
