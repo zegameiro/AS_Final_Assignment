@@ -3,5 +3,6 @@ public enum EventStatus
 {
     Create,
     Update,
-    Delete
+    Delete,
+    UpdateMetaData
 }

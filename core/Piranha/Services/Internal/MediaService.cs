@@ -11,6 +11,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Piranha.Cache;
+using Piranha.Events;
 using Piranha.Models;
 using Piranha.Repositories;
 
@@ -23,7 +24,7 @@ internal sealed class MediaService : IMediaService
     private readonly IStorage _storage;
     private readonly IImageProcessor _processor;
     private readonly ICache _cache;
-    private readonly IEventBus _eventBus;
+    private readonly EventBus _eventBus;
     private static readonly object ScaleMutex = new object();
     private const string MEDIA_STRUCTURE = "MediaStructure";
 
@@ -36,7 +37,7 @@ internal sealed class MediaService : IMediaService
     /// <param name="cache">The optional model cache</param>
     /// <param name="processor">The optional image processor</param>
     /// <param name="eventBus">The event Bus</param>
-    public MediaService(IMediaRepository repo, IEventBus eventBus, IParamService paramService, IStorage storage, IImageProcessor processor = null, ICache cache = null)
+    public MediaService(IMediaRepository repo, EventBus eventBus, IParamService paramService, IStorage storage, IImageProcessor processor = null, ICache cache = null)
     {
         _repo = repo;
         _paramService = paramService;
@@ -190,6 +191,16 @@ internal sealed class MediaService : IMediaService
 
             await RemoveFromCache(model).ConfigureAwait(false);
             await RemoveStructureFromCache().ConfigureAwait(false);
+
+            await _eventBus.Publish(new Event
+            {
+                Id = new Guid(),
+                Type = EventType.Media,
+                Status = EventStatus.UpdateMetaData,
+                CreatedAt = DateTime.Now,
+                ContentId = model.Id,
+                Tags = model.Tags,
+            });
         }
         else
         {
@@ -223,7 +234,7 @@ internal sealed class MediaService : IMediaService
             model = new Media()
             {
                 Id = model != null || content.Id.HasValue ? content.Id.Value : Guid.NewGuid(),
-                Created = DateTime.Now,Tags="banana"
+                Created = DateTime.Now,Tags=""
             };
             content.Id = model.Id;
         }
@@ -294,13 +305,14 @@ internal sealed class MediaService : IMediaService
         {
             status = EventStatus.Create;
         }
-        _eventBus.Publish(new Event
+        await _eventBus.Publish(new Event
         {
             Id = new Guid(),
             Type = EventType.Media,
             Status = status,
             CreatedAt = DateTime.Now,
             ContentId = model.Id,
+            Tags = model.Tags,
         });
 
         App.Hooks.OnBeforeSave(model);
@@ -508,13 +520,14 @@ internal sealed class MediaService : IMediaService
             await RemoveFromCache(media).ConfigureAwait(false);
             await RemoveStructureFromCache().ConfigureAwait(false);
 
-            _eventBus.Publish(new Event
+            await _eventBus.Publish(new Event
             {
                 Id = new Guid(),
                 Type = EventType.Media,
                 Status = EventStatus.Delete,
                 CreatedAt = DateTime.Now,
                 ContentId = media.Id,
+                Tags = media.Tags,
             });
         }
     }

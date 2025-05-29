@@ -6,4 +6,5 @@ public class Event
     public EventStatus Status { get; set; }
     public EventType Type { get; set; }
     public Guid ContentId { get; set; }
+    public String Tags { get; set; }
 }
