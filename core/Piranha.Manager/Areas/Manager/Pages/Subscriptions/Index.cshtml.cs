@@ -13,10 +13,15 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
 
         [BindProperty]
         public string EventType { get; set; }
+        
         [BindProperty]
         public string CallbackUrl { get; set; }
+
         [BindProperty]
         public string Filter { get; set; }
+
+        [BindProperty]
+        public Guid Id { get; set; } // Add this property
 
         public IndexModel(SubscriptionService service)
         {
@@ -28,20 +33,19 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
             Subscriptions = (await _service.GetAllAsync()).ToList();
         }
 
-        public async Task<IActionResult> OnPostAddAsync()
+        public async Task<IActionResult> OnPostAddOrUpdateAsync()
         {
             if (!string.IsNullOrWhiteSpace(EventType) && !string.IsNullOrWhiteSpace(CallbackUrl))
             {
-                Console.WriteLine($"Adding subscription: {EventType} - {CallbackUrl} - {Filter}");
                 var sub = new Subscription
                 {
+                    Id = Id, // If empty, add; if set, update
                     EventType = EventType,
                     CallbackUrl = CallbackUrl,
                     Filter = Filter
                 };
                 await _service.SaveAsync(sub);
             }
-            Console.WriteLine("Subscription added successfully.");
             return RedirectToPage();
         }
 

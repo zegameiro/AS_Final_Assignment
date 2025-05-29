@@ -14,8 +14,7 @@ namespace Piranha.Repositories
 
         public Task DeleteAllAsync()
         {
-            return _db.Subscriptions
-                .ExecuteDeleteAsync();
+            return _db.Subscriptions.ExecuteDeleteAsync();
         }
 
         public Task DeleteAsync(Guid id)
@@ -25,68 +24,52 @@ namespace Piranha.Repositories
                 .ExecuteDeleteAsync();
         }
 
-        public Task<IEnumerable<Subscription>> GetAllAsync()
+        public async Task<IEnumerable<Subscription>> GetAllAsync()
         {
-            return _db.Subscriptions
+            return await _db.Subscriptions
                 .AsNoTracking()
-                .ToListAsync()
-                .ContinueWith(t => (IEnumerable<Models.Subscription>)t.Result);
+                .ToListAsync();
         }
 
-        public Task<IEnumerable<Subscription>> GetByEventTypeAsync(string eventType)
+        public async Task<IEnumerable<Subscription>> GetByEventTypeAsync(string eventType)
         {
-            return _db.Subscriptions
+            return await _db.Subscriptions
                 .AsNoTracking()
                 .Where(s => s.EventType == eventType)
-                .ToListAsync()
-                .ContinueWith(t => (IEnumerable<Subscription>)t.Result);
+                .ToListAsync();
         }
 
-        public Task<IEnumerable<Subscription>> GetByFilterAsync(string filter)
+        public async Task<IEnumerable<Subscription>> GetByFilterAsync(string filter)
         {
-            return _db.Subscriptions
+            return await _db.Subscriptions
                 .AsNoTracking()
                 .Where(s => s.Filter == filter)
-                .ToListAsync()
-                .ContinueWith(t => (IEnumerable<Subscription>)t.Result);
+                .ToListAsync();
         }
 
-        public Task<Subscription> GetByIdAsync(Guid id)
+        public async Task<Subscription> GetByIdAsync(Guid id)
         {
-            return _db.Subscriptions
+            return await _db.Subscriptions
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id)
-                .ContinueWith(t => t.Result != null ? new Subscription
-                {
-                    Id = t.Result.Id,
-                    EventType = t.Result.EventType,
-                    Filter = t.Result.Filter,
-                    CallbackUrl = t.Result.CallbackUrl,
-                    Created = t.Result.Created
-                } : null);
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public Task<Subscription> SaveAsync(Subscription subscription)
+        public async Task<Subscription> SaveAsync(Subscription subscription)
         {
             if (subscription.Id == Guid.Empty)
             {
-                Console.WriteLine("Adding new subscription in Repository.");
                 subscription.Id = Guid.NewGuid();
+                subscription.Created = DateTime.UtcNow;
                 _db.Subscriptions.Add(subscription);
-                Console.WriteLine("Subscription added with success in Repository.");
-                
             }
             else
             {
-                var dbSubscription = _db.Subscriptions
-                    .FirstOrDefault(s => s.Id == subscription.Id);
-
+                var dbSubscription = await _db.Subscriptions.FirstOrDefaultAsync(s => s.Id == subscription.Id);
                 if (dbSubscription != null)
                 {
                     dbSubscription.EventType = subscription.EventType;
                     dbSubscription.Filter = subscription.Filter;
                     dbSubscription.CallbackUrl = subscription.CallbackUrl;
-                    dbSubscription.Created = subscription.Created;
                 }
                 else
                 {
@@ -94,8 +77,8 @@ namespace Piranha.Repositories
                 }
             }
 
-            return _db.SaveChangesAsync()
-                .ContinueWith(t => subscription);
+            await _db.SaveChangesAsync();
+            return subscription;
         }
     }
 }

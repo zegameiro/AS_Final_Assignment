@@ -1,20 +1,68 @@
 @page "~/manager/subscriptions"
 @model Piranha.Manager.Areas.Manager.Pages.Subscriptions.IndexModel
 @inject ManagerLocalizer Localizer
+@using Piranha.Events
 @{
     ViewBag.Title = "Subscriptions";
     ViewBag.MenuItem = "Subscriptions";
+    var eventTypes = Enum.GetNames(typeof(EventStatus));
 }
 
 @section script {
     <script>
-        $(function () {
-            $('#addModal').on('shown.bs.modal', function () {
-                $('#EventType').trigger('focus');
-            });
+        // Open modal for add or edit
+        $('#addModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            // If editing, fill fields
+            var id = button.data('id') || '';
+            var eventType = button.data('eventtype') || '';
+            var callbackUrl = button.data('callbackurl') || '';
+            var filter = button.data('filter') || '';
+
+            modal.find('#SubscriptionId').val(id);
+            modal.find('#EventType').val(eventType);
+            modal.find('#CallbackUrl').val(callbackUrl);
+            modal.find('#Filter').val(filter);
+
+            // Set modal title and button
+            if (id) {
+                modal.find('.modal-title').text('Edit Subscription');
+                modal.find('#saveBtn').text('Update');
+            } else {
+                modal.find('.modal-title').text('Add Subscription');
+                modal.find('#saveBtn').text('Add');
+            }
+        });
+
+        // Clear modal fields on close
+        $('#addModal').on('hidden.bs.modal', function () {
+            $(this).find('form')[0].reset();
+            $(this).find('#SubscriptionId').val('');
         });
     </script>
 }
+
+<style>
+    .btn-edit i {
+        color: var(--bs-primary);
+        transition: color 0.2s ease;
+    }
+
+    .btn-edit:hover i {
+        color: white;
+    }
+
+    .btn-delete i {
+        color: var(--bs-danger);
+        transition: color 0.2s ease;
+    }
+
+    .btn-delete:hover i {
+        color: white;
+    }
+</style>
 
 <div id="subscriptions">
     <div class="top">
@@ -45,11 +93,11 @@
                     <table class="table table-borderless table-hover">
                         <thead>
                             <tr>
-                                <th class="w-25">Event Type</th>
+                                <th class="w-20">Event Type</th>
                                 <th class="w-25">Callback Url</th>
-                                <th class="w-25">Filter</th>
+                                <th class="w-20">Filter</th>
                                 <th class="w-25">Id</th>
-                                <th class="actions one"></th>
+                                <th class="actions two">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,13 +116,35 @@
                                     <td>@sub.CallbackUrl</td>
                                     <td>@sub.Filter</td>
                                     <td class="text-monospace small">@sub.Id</td>
-                                    <td class="actions one">
-                                        <form asp-page-handler="Delete" method="post" class="d-inline">
-                                            <input type="hidden" name="id" value="@sub.Id" />
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
-                                                <i class="fas fa-trash"></i>
+                                    <td class="actions two">
+                                        <div class="d-flex align-items-center justify-content-center">
+
+                                            <!-- Edit Button -->
+                                            <button type="button"
+                                                    class="btn btn-outline-primary btn-sm btn-edit d-flex align-items-center justify-content-center mx-1"
+                                                    style="width:32px; height:32px; padding:0;"
+                                                    data-toggle="modal"
+                                                    data-target="#addModal"
+                                                    data-id="@sub.Id"
+                                                    data-eventtype="@sub.EventType"
+                                                    data-callbackurl="@sub.CallbackUrl"
+                                                    data-filter="@sub.Filter"
+                                                    title="Edit">
+                                                <i class="fas fa-edit"></i>
                                             </button>
-                                        </form>
+
+                                            <!-- Delete Button -->
+                                            <form asp-page-handler="Delete" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@sub.Id" />
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-sm btn-delete d-flex align-items-center justify-content-center mx-1"
+                                                        style="width:32px; height:32px; padding:0;"
+                                                        title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+
+                                        </div>
                                     </td>
                                 </tr>
                             }
@@ -87,11 +157,12 @@
     </div>
 </div>
 
-<!-- Add Subscription Modal -->
+<!-- Add/Edit Subscription Modal -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form method="post" asp-page-handler="Add">
+      <form method="post" asp-page-handler="AddOrUpdate">
+        <input type="hidden" id="SubscriptionId" name="Id" value="" />
         <div class="modal-header">
           <h5 class="modal-title" id="addModalLabel">Add Subscription</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -101,20 +172,25 @@
         <div class="modal-body">
             <div class="form-group">
                 <label>Event Type</label>
-                <input type="text" name="EventType" class="form-control" required />
+                <select id="EventType" name="EventType" class="form-control" required>
+                    @foreach (var type in eventTypes)
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </select>
             </div>
             <div class="form-group">
                 <label>Callback Url</label>
-                <input type="url" name="CallbackUrl" class="form-control" required />
+                <input type="url" id="CallbackUrl" name="CallbackUrl" class="form-control" required />
             </div>
             <div class="form-group">
                 <label>Filter</label>
-                <input type="text" name="Filter" class="form-control" />
+                <input type="text" id="Filter" name="Filter" class="form-control" />
             </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="submit" id="saveBtn" class="btn btn-primary">Add</button>
         </div>
       </form>
     </div>
