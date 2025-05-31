@@ -12,14 +12,21 @@ public class EventConsumer : BackgroundService
     private readonly EventBus _eventBus;
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly NotificationService _notificationService;
+    private readonly IMediaRepository _mediaRepository;
 
-    public EventConsumer(EventBus eventBus, ISubscriptionRepository subscriptionRepository, NotificationService notificationService)
+    public EventConsumer(
+        EventBus eventBus,
+        ISubscriptionRepository subscriptionRepository,
+        NotificationService notificationService,
+        IMediaRepository mediaRepository
+    )
     {
         _eventBus = eventBus;
         _subscriptionRepository = subscriptionRepository;
-        _notificationService = notificationService; 
+        _notificationService = notificationService;
+        _mediaRepository = mediaRepository;
     }
-    
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
 
@@ -51,9 +58,15 @@ public class EventConsumer : BackgroundService
                     // Notify each subscription
                     foreach (var subscription in filtered)
                     {
+                        var media = await _mediaRepository.GetById(@event.ContentId);
                         try
                         {
-                            await _notificationService.NotifyAsync(subscription.CallbackUrl, @event);
+                            var payload = new
+                            {
+                                Event = @event,
+                                Media = media,
+                            };
+                            await _notificationService.NotifyAsync(subscription.CallbackUrl, payload);
                             Console.WriteLine($"[EVENT CONSUMER] Notified {subscription.CallbackUrl} for event type: {@event.Type}");
                         }
                         catch (Exception ex)
