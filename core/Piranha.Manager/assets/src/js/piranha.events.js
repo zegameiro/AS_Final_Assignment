@@ -1,0 +1,30 @@
+window.piranha = window.piranha || {};
+window.piranha.events = {
+    load: function() {
+        fetch('/manager/api/events/list')
+            .then(response => response.json())
+            .then(events => {
+                const tbody = document.querySelector('#events-table tbody');
+                tbody.innerHTML = '';
+                events.forEach(ev => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${ev.id}</td>
+                        <td>${ev.createdAt}</td>
+                        <td>${ev.status}</td>
+                        <td>${ev.type}</td>
+                        <td>${ev.contentId}</td>
+                        <td>${ev.tags || ''}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+    }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('events-table')) {
+        piranha.events.load();
+        document.getElementById('refresh-events').addEventListener('click', piranha.events.load);
+    }
+});

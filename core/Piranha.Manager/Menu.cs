@@ -101,6 +101,14 @@ public static class Menu
             {
                 new MenuItem
                 {
+                    InternalId = "EventList",
+                    Name = "Event List",
+                    Route = "~/manager/events",
+                    Policy = Permission.Admin,
+                    Css = "fas fa-list"
+                },
+                new MenuItem
+                {
                     InternalId = "Subscriptions",
                     Name = "Subscriptions",
                     Route = "~/manager/subscriptions",

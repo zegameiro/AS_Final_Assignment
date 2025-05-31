@@ -1,0 +1,52 @@
+@page "/manager/events"
+@model Piranha.Manager.Areas.Manager.Pages.Events.IndexModel
+@inject ManagerLocalizer Localizer
+@{
+    ViewBag.Title = "Events";
+    ViewBag.MenuItem = "Events";
+}
+
+@section script {
+    <script src="~/manager/assets/js/piranha.events.min.js"></script>
+}
+
+<div id="events">
+    <div class="top">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">@Localizer.Menu["System"]</li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewBag.Title</li>
+            </ol>
+        </nav>
+        <div class="container-fluid">
+            <div class="top-nav">
+                <button type="button" class="btn btn-primary btn-sm" id="refresh-events">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="app ready">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <table class="table table-borderless table-hover" id="events-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Created At</th>
+                                <th>Status</th>
+                                <th>Type</th>
+                                <th>Content Id</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Events will be loaded here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
