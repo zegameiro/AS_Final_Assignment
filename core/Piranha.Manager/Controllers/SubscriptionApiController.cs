@@ -7,9 +7,8 @@ namespace Piranha.Manager.Controllers
 {
     [Area("Manager")]
     [Route("manager/api/subscription")]
-    [Authorize(Policy = Permission.Admin)]
     [ApiController]
-    [AutoValidateAntiforgeryToken]
+    // [AutoValidateAntiforgeryToken]
     public class SubscriptionApiController : Controller
     {
         private readonly SubscriptionService _service;
@@ -38,6 +37,7 @@ namespace Piranha.Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> Save([FromBody] Subscription model)
         {
+            Console.WriteLine("Saving subscription: " + model);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

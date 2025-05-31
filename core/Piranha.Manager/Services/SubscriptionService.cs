@@ -1,6 +1,5 @@
 using Piranha.Models;
 using Piranha.Repositories;
-using Piranha.Services;
 
 namespace Piranha.Manager.Services
 {

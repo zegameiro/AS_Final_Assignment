@@ -90,13 +90,22 @@ public static class Menu
                     Policy = Permission.Modules,
                     Css = "fas fa-code-branch"
                 },
+            }
+        },
+        new MenuItem
+        {
+            InternalId = "Event Management",
+            Name = "Events",
+            Css = "fas fa-bell",
+            Items = new MenuItemList
+            {
                 new MenuItem
                 {
                     InternalId = "Subscriptions",
                     Name = "Subscriptions",
                     Route = "~/manager/subscriptions",
                     Policy = Permission.Admin,
-                    Css = "fas fa-bell"
+                    Css = "fas fa-envelope"
                 }
             }
         }
