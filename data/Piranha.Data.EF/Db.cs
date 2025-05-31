@@ -221,6 +221,8 @@ public abstract class Db<T> : DbContext, IDb where T : Db<T>
     /// </summary>
     public DbSet<Data.Taxonomy> Taxonomies { get; set; }
 
+    public DbSet<Models.Key> Keys { get; set; }
+
     public DbSet<Models.Subscription> Subscriptions { get; set; }
 
     /// <summary>
@@ -457,7 +459,11 @@ public abstract class Db<T> : DbContext, IDb where T : Db<T>
         mb.Entity<Data.Taxonomy>().Property(t => t.Slug).IsRequired().HasMaxLength(64);
         mb.Entity<Data.Taxonomy>().HasIndex(t => new { t.GroupId, t.Type, t.Slug }).IsUnique();
 
-        mb.Entity<Models.Subscription>().ToTable("Piranha_Subscriptions");
+        mb.Entity<Models.Key>().ToTable("Piranha_Keys");
+        mb.Entity<Models.Key>().Property(k => k.Id).IsRequired().HasMaxLength(64);
+        mb.Entity<Models.Key>().Property(k => k.Name).IsRequired().HasMaxLength(64);
+        mb.Entity<Models.Key>().HasIndex(k => new { k.Id }).IsUnique();
+
         mb.Entity<Models.Subscription>().ToTable("Piranha_Subscriptions");
         mb.Entity<Models.Subscription>().Property(s => s.Id).IsRequired().HasMaxLength(64);
         mb.Entity<Models.Subscription>().Property(s => s.EventType).IsRequired().HasMaxLength(64);

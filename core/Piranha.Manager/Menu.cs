@@ -106,6 +106,14 @@ public static class Menu
                     Route = "~/manager/subscriptions",
                     Policy = Permission.Admin,
                     Css = "fas fa-envelope"
+                },
+                new MenuItem
+                {
+                    InternalId = "Keys",
+                    Name = "Keys",
+                    Route = "~/manager/keys",
+                    Policy = Permission.Admin,
+                    Css = "fas fa-key"
                 }
             }
         }

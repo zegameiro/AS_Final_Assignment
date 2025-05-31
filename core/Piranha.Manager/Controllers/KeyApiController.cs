@@ -5,14 +5,13 @@ using Piranha.Manager.Services;
 namespace Piranha.Manager.Controllers
 {
     [Area("Manager")]
-    [Route("manager/api/subscription")]
+    [Route("manager/api/key")]
     [ApiController]
-    // [AutoValidateAntiforgeryToken]
-    public class SubscriptionApiController : Controller
+    public class KeyApiController : Controller
     {
-        private readonly SubscriptionService _service;
+        private readonly KeyService _service;
 
-        public SubscriptionApiController(SubscriptionService service)
+        public KeyApiController(KeyService service)
         {
             _service = service;
         }
@@ -20,25 +19,27 @@ namespace Piranha.Manager.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var subs = await _service.GetAllAsync();
-            return Ok(subs);
+            var keys = await _service.GetAllAsync();
+            return Ok(keys);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var sub = await _service.GetByIdAsync(id);
-            if (sub == null)
+            var key = await _service.GetByIdAsync(id);
+            if (key == null)
                 return NotFound();
-            return Ok(sub);
+            return Ok(key);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save([FromBody] Subscription model)
+        public async Task<IActionResult> Save([FromBody] Key model)
         {
-            Console.WriteLine("Saving subscription: " + model);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (model.Id == Guid.Empty)
+                model.Id = Guid.NewGuid();
 
             var saved = await _service.SaveAsync(model);
             return Ok(saved);
