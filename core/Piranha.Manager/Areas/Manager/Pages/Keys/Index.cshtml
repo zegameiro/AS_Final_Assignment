@@ -1,0 +1,164 @@
+@page "~/manager/keys"
+@model Piranha.Manager.Areas.Manager.Pages.Keys.IndexModel
+@inject ManagerLocalizer Localizer
+@{
+    ViewBag.Title = "Keys";
+    ViewBag.MenuItem = "Keys";
+}
+
+@section script {
+    <script>
+        $('#addModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            var id = button.data('id') || '';
+            var name = button.data('name') || '';
+
+            modal.find('#KeyId').val(id);
+            modal.find('#KeyName').val(name);
+
+            if (id) {
+                modal.find('.modal-title').text('Edit Key');
+                modal.find('#saveBtn').text('Update');
+            } else {
+                modal.find('.modal-title').text('Add Key');
+                modal.find('#saveBtn').text('Add');
+            }
+        });
+
+        $('#addModal').on('hidden.bs.modal', function () {
+            $(this).find('form')[0].reset();
+            $(this).find('#KeyId').val('');
+        });
+    </script>
+}
+
+<style>
+    .btn-edit i {
+        color: var(--bs-primary);
+        transition: color 0.2s ease;
+    }
+
+    .btn-edit:hover i {
+        color: white;
+    }
+
+    .btn-delete i {
+        color: var(--bs-danger);
+        transition: color 0.2s ease;
+    }
+
+    .btn-delete:hover i {
+        color: white;
+    }
+</style>
+
+<div id="keys">
+    <div class="top">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">@Localizer.Menu["System"]</li>
+                <li class="breadcrumb-item active" aria-current="page">@ViewBag.Title</li>
+            </ol>
+        </nav>
+        <div class="container-fluid">
+            <div class="top-nav">
+                <form method="post" asp-page-handler="DeleteAll" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i> Delete All
+                    </button>
+                </form>
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addModal">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app ready">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <table class="table table-borderless table-hover">
+                        <thead>
+                            <tr>
+                                <th class="w-50">Id</th>
+                                <th class="w-50">Name</th>
+                                <th class="actions two">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @if (!Model.Keys.Any())
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No keys found.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var key in Model.Keys)
+                            {
+                                <tr>
+                                    <td class="text-monospace small">@key.Id</td>
+                                    <td>@key.Name</td>
+                                    <td class="actions two">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <button type="button"
+                                                    class="btn btn-outline-primary btn-sm d-flex align-items-center justify-content-center mx-1"
+                                                    style="width:32px; height:32px; padding:0;"
+                                                    data-toggle="modal"
+                                                    data-target="#addModal"
+                                                    data-id="@key.Id"
+                                                    data-name="@key.Name"
+                                                    title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <form asp-page-handler="Delete" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="@key.Id" />
+                                                <button type="submit"
+                                                        class="btn btn-outline-danger btn-sm btn-delete d-flex align-items-center justify-content-center mx-1"
+                                                        style="width:32px; height:32px; padding:0;"
+                                                        title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Key Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" asp-page-handler="AddOrUpdate">
+        <input type="hidden" id="KeyId" name="Id" value="" />
+        <div class="modal-header">
+          <h5 class="modal-title" id="addModalLabel">Add Key</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="KeyName" name="Name" class="form-control" required maxlength="128" />
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" id="saveBtn" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

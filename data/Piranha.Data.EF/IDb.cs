@@ -212,6 +212,8 @@ public interface IDb : IDisposable
     /// </summary>
     DbSet<Data.Taxonomy> Taxonomies { get; set; }
 
+    DbSet<Models.Key> Keys { get; set; }
+
     DbSet<Models.Subscription> Subscriptions { get; set; }
 
     /// <summary>
