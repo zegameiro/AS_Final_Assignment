@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Piranha.Data.EF.SQLite;
 
@@ -10,9 +11,11 @@ using Piranha.Data.EF.SQLite;
 namespace Piranha.Data.EF.SQLite.Migrations
 {
     [DbContext(typeof(SQLiteDb))]
-    partial class DbModelSnapshot : ModelSnapshot
+    [Migration("20250531164238_AddTagsToTable")]
+    partial class AddTagsToTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -494,7 +497,6 @@ namespace Piranha.Data.EF.SQLite.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Tags")
-                        .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("TEXT");
 

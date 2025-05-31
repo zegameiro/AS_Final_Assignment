@@ -96,6 +96,8 @@ public sealed class Api : IApi, IDisposable
     /// </summary>
     public ISiteTypeService SiteTypes { get; }
 
+    public NotificationService Notifications { get; }
+
     /// <summary>
     /// Gets if the current repository has caching enabled or not.
     /// </summary>
@@ -138,6 +140,7 @@ public sealed class Api : IApi, IDisposable
         Params = new ParamService(paramRepository, cache);
         PostTypes = new PostTypeService(postTypeRepository, cache);
         SiteTypes = new SiteTypeService(siteTypeRepository, cache);
+        Notifications = new NotificationService(new HttpClient());
 
         // Create services with dependencies
         Content = new ContentService(contentRepository, contentFactory, Languages, cache, search);

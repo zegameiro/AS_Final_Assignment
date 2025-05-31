@@ -324,6 +324,7 @@ public abstract class Db<T> : DbContext, IDb where T : Db<T>
         mb.Entity<Data.Media>().Property(m => m.Title).HasMaxLength(128);
         mb.Entity<Data.Media>().Property(m => m.AltText).HasMaxLength(128);
         mb.Entity<Data.Media>().Property(m => m.Description).HasMaxLength(512);
+        mb.Entity<Data.Media>().Property(m => m.Tags).HasMaxLength(512).IsRequired();
 
         mb.Entity<Data.MediaFolder>().ToTable("Piranha_MediaFolders");
         mb.Entity<Data.MediaFolder>().Property(f => f.Name).HasMaxLength(128).IsRequired();

@@ -13,6 +13,7 @@ using Piranha;
 using Piranha.Models;
 using Piranha.Services;
 using Piranha.Events;
+using Microsoft.Extensions.Http;
 
 public static class PiranhaStartupExtensions
 {
@@ -25,6 +26,7 @@ public static class PiranhaStartupExtensions
 
         services.AddSingleton<IContentFactory, ContentFactory>();
         services.AddSingleton<EventBus>(sp => EventBus.CreateAsync().GetAwaiter().GetResult());
+        services.AddHttpClient<NotificationService>();
 
         services.AddHostedService<EventConsumer>();
 
