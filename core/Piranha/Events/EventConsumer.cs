@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +14,8 @@ public class EventConsumer : BackgroundService
     private readonly EventBus _eventBus;
     private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly NotificationService _notificationService;
+    private static readonly List<Event> ConsumedEvents = new List<Event>();
+    private static readonly object Lock = new object();
     private readonly IMediaRepository _mediaRepository;
 
     public EventConsumer(
@@ -80,8 +84,20 @@ public class EventConsumer : BackgroundService
                     Console.WriteLine("[EVENT CONSUMER] No subscriptions matched the filter for event type: " + @event.Type);
                 }
             }
-
+            lock (Lock)
+            {
+                ConsumedEvents.Add(@event);
+            }
             await Task.CompletedTask;
         });
+    }
+
+    public static IEnumerable<Event> GetConsumedEvents()
+    {
+        lock (Lock)
+        {
+            // Return a copy to avoid issues with concurrent modification if the list is iterated elsewhere
+            return ConsumedEvents.ToList();
+        }
     }
 }
