@@ -49,6 +49,8 @@ public abstract class PageBase : RoutedContentBase
     /// </summary>
     public Guid? OriginalPageId { get; set; }
 
+    public string Tags { get; set; }
+
     /// <summary>
     /// Gets if this is the startpage of the site.
     /// </summary>

@@ -39,11 +39,19 @@ namespace Piranha.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Subscription>> GetByFilterAsync(string filter)
+        public async Task<IEnumerable<Subscription>> GetByEventStatusAsync(string eventStatus)
         {
             return await _db.Subscriptions
                 .AsNoTracking()
-                .Where(s => s.Filter == filter)
+                .Where(s => s.EventStatus == eventStatus)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Subscription>> GetByTagsAsync(string filter)
+        {
+            return await _db.Subscriptions
+                .AsNoTracking()
+                .Where(s => s.Tags == filter)
                 .ToListAsync();
         }
 
@@ -68,7 +76,7 @@ namespace Piranha.Repositories
                 if (dbSubscription != null)
                 {
                     dbSubscription.EventType = subscription.EventType;
-                    dbSubscription.Filter = subscription.Filter;
+                    dbSubscription.Tags = subscription.Tags;
                     dbSubscription.CallbackUrl = subscription.CallbackUrl;
                 }
                 else

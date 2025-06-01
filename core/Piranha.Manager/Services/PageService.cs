@@ -303,6 +303,11 @@ public class PageService
             model.PendingCommentCount = (await _api.Pages.GetAllPendingCommentsAsync(id))
                 .Count();
 
+            if (page.Tags != null)
+            {
+                model.Tags = page.Tags;
+            }
+
             return model;
         }
         return null;
@@ -365,6 +370,7 @@ public class PageService
             page.OgImage = model.OgImage;
             page.PrimaryImage = model.PrimaryImage;
             page.Excerpt = model.Excerpt;
+            page.Tags = model.Tags;
             page.IsHidden = model.IsHidden;
             page.Published = ParsePublishedDate(model); // !string.IsNullOrEmpty(model.Published) ? DateTime.Parse(model.Published) : (DateTime?)null;
             page.RedirectUrl = model.RedirectUrl;

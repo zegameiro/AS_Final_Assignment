@@ -101,6 +101,8 @@ public sealed class Page : RoutedContentBase<PageField>
     /// </summary>
     public Page Parent { get; set; }
 
+    public string Tags { get; set; }
+
     /// <summary>
     /// Gets/sets the available page blocks.
     /// </summary>
