@@ -31,6 +31,8 @@ public abstract class MediaContent
     /// Gets/sets the filename.
     /// </summary>
     public string Filename { get; set; }
+
+    public string Tags {get; set; }
 }
 
 /// <summary>

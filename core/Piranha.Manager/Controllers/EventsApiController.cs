@@ -44,6 +44,7 @@ namespace Piranha.Manager.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> PublishMedia(
             [FromForm] Piranha.Manager.Models.MediaUploadModel model,
+            [FromForm] string Tags,
             [FromHeader(Name = "X-API-Key")] string headerApiKey,
             [FromQuery(Name = "apiKey")] string queryApiKey)
         {
@@ -63,7 +64,8 @@ namespace Piranha.Manager.Controllers
                             Id = model.Uploads.Count() == 1 ? model.Id : null,
                             FolderId = model.ParentId,
                             Filename = System.IO.Path.GetFileName(upload.FileName),
-                            Data = stream
+                            Data = stream,
+                            Tags = Tags
                         });
                         uploaded++;
                     }
