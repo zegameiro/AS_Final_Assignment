@@ -231,10 +231,18 @@ internal sealed class MediaService : IMediaService
         if (model == null)
         {
             isNew = true;
+            
+            string tags = "";
+            if (content.Tags != null)
+            {
+                tags = content.Tags;
+            }
+
             model = new Media()
             {
                 Id = model != null || content.Id.HasValue ? content.Id.Value : Guid.NewGuid(),
-                Created = DateTime.Now,Tags=""
+                Created = DateTime.Now,
+                Tags = tags
             };
             content.Id = model.Id;
         }
