@@ -8,6 +8,23 @@
 
 @section script {
     <script>
+        function copyKeyToClipboard(btn, keyId) {
+            navigator.clipboard.writeText(keyId);
+            var msg = btn.parentElement.querySelector('.copied-msg');
+            if (msg) {
+                msg.classList.add('show');
+                msg.classList.remove('hide');
+                msg.style.display = 'inline';
+                setTimeout(function () {
+                    msg.classList.add('hide');
+                    msg.classList.remove('show');
+                    setTimeout(function () {
+                        msg.style.display = 'none';
+                    }, 500); // match transition duration
+                }, 3000);
+            }
+        }
+
         $('#addModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             var modal = $(this);
@@ -51,6 +68,26 @@
 
     .btn-delete:hover i {
         color: white;
+    }
+    .copied-msg {
+        left: 50%;
+        top: 50%;
+        margin-left: 30px;
+        color: #28a745;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.5s;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+    .copied-msg.show {
+        display: inline;
+        opacity: 1;
+        transition: opacity 0.5s;
+    }
+    .copied-msg.hide {
+        opacity: 0;
+        transition: opacity 0.5s;
     }
 </style>
 
@@ -100,7 +137,16 @@
                             foreach (var key in Model.Keys)
                             {
                                 <tr>
-                                    <td class="text-monospace small">@key.Id</td>
+                                    <td class="text-monospace small position-relative">
+                                        @key.Id
+                                        <button type="button"
+                                                class="btn btn-outline-secondary btn-sm ml-2 copy-btn"
+                                                title="Copy"
+                                                onclick="copyKeyToClipboard(this, '@key.Id')">
+                                            <i class="fas fa-clipboard"></i>
+                                        </button>
+                                        <span class="copied-msg" style="display:none;">Copied!</span>
+                                    </td>
                                     <td>@key.Name</td>
                                     <td class="actions two">
                                         <div class="d-flex align-items-center justify-content-center">

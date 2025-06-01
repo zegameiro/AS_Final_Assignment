@@ -24,6 +24,19 @@
 </head>
 <body>
   <div class="container">
+
+    <!-- Publish Media Card -->
+    <div class="card" style="margin-bottom:32px;">
+      <h2>Publish Media</h2>
+      <form id="mediaUploadForm" enctype="multipart/form-data">
+        <input type="text" id="apiKey" placeholder="API Key" required style="width:100%;margin-bottom:10px;">
+        <input type="text" id="tags" placeholder="Tags (comma separated)" style="width:100%;margin-bottom:10px;">
+        <input type="file" id="mediaFiles" name="mediaFiles" multiple required style="margin-bottom:10px;">
+        <button type="submit">Upload</button>
+      </form>
+      <div id="uploadStatus"></div>
+    </div>
+
     <!-- Subscriptions Card -->
     <div class="card">
       <h2>Your Subscriptions</h2>
@@ -65,7 +78,48 @@
     </div>
   </div>
   <script>
-    // --- Subscriptions (local only, but synced with backend) ---
+    // --- Media Upload ---
+    document.getElementById('mediaUploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const tags = document.getElementById('tags').value;
+      const files = document.getElementById('mediaFiles').files;
+      if (!apiKey || files.length === 0) {
+        alert('API Key and at least one file are required.');
+        return;
+      }
+
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append('model.Uploads', files[i]);
+      }
+      formData.append('Tags', tags);
+
+      const res = await fetch('http://localhost:5000/manager/api/events/publish/', {
+        method: 'POST',
+        headers: {
+          'X-API-Key': apiKey
+        },
+        body: formData
+      });
+
+      const statusDiv = document.getElementById('uploadStatus');
+      if (res.ok) {
+        let msg = 'Upload successful!';
+        try {
+          const data = await res.json();
+          msg = data.message || msg;
+        } catch {}
+        statusDiv.textContent = msg;
+        statusDiv.style.color = 'green';
+        document.getElementById('mediaUploadForm').reset();
+      } else {
+        statusDiv.textContent = 'Upload failed. Check your API key and try again.';
+        statusDiv.style.color = 'red';
+      }
+    });
+
+    // --- Subscriptions ---
     const apiBase = 'http://localhost:5000/manager/api/subscription';
 
     function getDomain(url) {
@@ -76,16 +130,9 @@
       }
     }
 
-    function getLocalSubscriptions() {
-      return JSON.parse(localStorage.getItem('mySubscriptions') || '[]');
-    }
-    function setLocalSubscriptions(subs) {
-      localStorage.setItem('mySubscriptions', JSON.stringify(subs));
-    }
-     async function renderSubscriptions() {
+    async function renderSubscriptions() {
       const res = await fetch(apiBase);
       const allSubs = await res.json();
-      // Only show subscriptions with callbackUrl matching this app's origin
       const myOrigin = window.location.origin;
       const subs = allSubs.filter(sub => getDomain(sub.callbackUrl) === myOrigin);
 
@@ -105,6 +152,7 @@
         tbody.appendChild(tr);
       });
     }
+
     async function addSubscription(e) {
       e.preventDefault();
       const sub = {
