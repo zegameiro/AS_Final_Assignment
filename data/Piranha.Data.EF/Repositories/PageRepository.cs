@@ -639,6 +639,7 @@ internal class PageRepository : IPageRepository
                 page.Route = model.Route;
                 page.Published = model.Published;
                 page.LastModified = DateTime.Now;
+                page.Tags = model.Tags;
 
                 page.Permissions.Clear();
                 foreach (var permission in model.Permissions)

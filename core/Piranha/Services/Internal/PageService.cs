@@ -758,6 +758,7 @@ internal sealed class PageService : IPageService
                     Id = new Guid(),
                     Type = EventType.Page,
                     Status = EventStatus.Create,
+                    Tags = model.Tags,
                     CreatedAt = DateTime.Now,
                     ContentId = model.Id,
                 });
@@ -770,12 +771,12 @@ internal sealed class PageService : IPageService
                     Id = new Guid(),
                     Type = EventType.Page,
                     Status = EventStatus.Update,
+                    Tags = model.Tags,
                     CreatedAt = DateTime.Now,
                     ContentId = model.Id,
                 });
             }
         }
-
     }
 
     /// <summary>
@@ -868,6 +869,16 @@ internal sealed class PageService : IPageService
         if (model != null)
         {
             await DeleteAsync(model).ConfigureAwait(false);
+            
+            await _eventBus.Publish(new Event
+            {
+                Id = new Guid(),
+                Type = EventType.Page,
+                Status = EventStatus.Delete,
+                Tags = model.Tags,
+                CreatedAt = DateTime.Now,
+                ContentId = model.Id,
+            });
         }
     }
 
@@ -890,6 +901,16 @@ internal sealed class PageService : IPageService
 
         // Remove from cache & invalidate sitemap
         await RemoveFromCache(model).ConfigureAwait(false);
+        
+        await _eventBus.Publish(new Event
+        {
+            Id = new Guid(),
+            Type = EventType.Page,
+            Status = EventStatus.Delete,
+            Tags = model.Tags,
+            CreatedAt = DateTime.Now,
+            ContentId = model.Id,
+        });
 
         await _siteService.InvalidateSitemapAsync(model.SiteId).ConfigureAwait(false);
     }

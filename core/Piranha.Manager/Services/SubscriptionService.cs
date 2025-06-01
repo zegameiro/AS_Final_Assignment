@@ -25,8 +25,10 @@ namespace Piranha.Manager.Services
         /// <inheritdoc />
         public Task<IEnumerable<Subscription>> GetByEventTypeAsync(string eventType) => _repo.GetByEventTypeAsync(eventType);
 
+        public Task<IEnumerable<Subscription>> GetByEventStatusAsync(string eventStatus) => _repo.GetByEventStatusAsync(eventStatus);
+
         /// <inheritdoc />
-        public Task<IEnumerable<Subscription>> GetByFilterAsync(string filter) => _repo.GetByFilterAsync(filter);
+        public Task<IEnumerable<Subscription>> GetByTagsAsync(string filter) => _repo.GetByTagsAsync(filter);
 
         /// <inheritdoc />
         public Task<Subscription> SaveAsync(Subscription subscription) => _repo.SaveAsync(subscription);

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Piranha.Data.EF.SQLite;
 
@@ -10,9 +11,11 @@ using Piranha.Data.EF.SQLite;
 namespace Piranha.Data.EF.SQLite.Migrations
 {
     [DbContext(typeof(SQLiteDb))]
-    partial class DbModelSnapshot : ModelSnapshot
+    [Migration("20250601100802_AddTagsToPage")]
+    partial class AddTagsToPage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -1422,24 +1425,18 @@ namespace Piranha.Data.EF.SQLite.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EventStatus")
+                    b.Property<string>("EventType")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EventType")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Tags")
-                        .IsRequired()
+                    b.Property<string>("Filter")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventType", "EventStatus", "Tags")
+                    b.HasIndex("EventType", "Filter")
                         .IsUnique();
 
                     b.ToTable("Piranha_Subscriptions", (string)null);

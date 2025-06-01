@@ -5,7 +5,8 @@
 @{
     ViewBag.Title = "Subscriptions";
     ViewBag.MenuItem = "Subscriptions";
-    var eventTypes = Enum.GetNames(typeof(EventStatus));
+    var eventTypes = Enum.GetNames(typeof(EventType));
+    var eventStatus = Enum.GetNames(typeof(EventStatus));
 }
 
 @section script {
@@ -18,13 +19,15 @@
             // If editing, fill fields
             var id = button.data('id') || '';
             var eventType = button.data('eventtype') || '';
+            var eventStatus = button.data('eventstatus') || '';
             var callbackUrl = button.data('callbackurl') || '';
-            var filter = button.data('filter') || '';
+            var tags = button.data('tags') || '';
 
             modal.find('#SubscriptionId').val(id);
             modal.find('#EventType').val(eventType);
+            modal.find('#EventStatus').val(eventStatus);
             modal.find('#CallbackUrl').val(callbackUrl);
-            modal.find('#Filter').val(filter);
+            modal.find('#Tags').val(tags);
 
             // Set modal title and button
             if (id) {
@@ -94,8 +97,9 @@
                         <thead>
                             <tr>
                                 <th class="w-20">Event Type</th>
+                                <th class="w-20">Event Status</th>
                                 <th class="w-25">Callback Url</th>
-                                <th class="w-20">Filter</th>
+                                <th class="w-20">Tags</th>
                                 <th class="w-25">Id</th>
                                 <th class="actions two">Actions</th>
                             </tr>
@@ -113,8 +117,9 @@
                             {
                                 <tr>
                                     <td>@sub.EventType</td>
+                                    <td>@sub.EventStatus</td>
                                     <td>@sub.CallbackUrl</td>
-                                    <td>@sub.Filter</td>
+                                    <td>@sub.Tags</td>
                                     <td class="text-monospace small">@sub.Id</td>
                                     <td class="actions two">
                                         <div class="d-flex align-items-center justify-content-center">
@@ -127,8 +132,9 @@
                                                     data-target="#addModal"
                                                     data-id="@sub.Id"
                                                     data-eventtype="@sub.EventType"
+                                                    data-eventstatus="@sub.EventStatus"
                                                     data-callbackurl="@sub.CallbackUrl"
-                                                    data-filter="@sub.Filter"
+                                                    data-tags="@sub.Tags"
                                                     title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </button>
@@ -180,12 +186,21 @@
                 </select>
             </div>
             <div class="form-group">
+                <label>Event Status</label>
+                <select id="EventStatus" name="EventStatus" class="form-control" required>
+                    @foreach (var status in eventStatus)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
                 <label>Callback Url</label>
                 <input type="url" id="CallbackUrl" name="CallbackUrl" class="form-control" required />
             </div>
             <div class="form-group">
-                <label>Filter</label>
-                <input type="text" id="Filter" name="Filter" class="form-control" />
+                <label>Tags</label>
+                <input type="text" id="Tags" name="Tags" class="form-control" />
             </div>
         </div>
         <div class="modal-footer">

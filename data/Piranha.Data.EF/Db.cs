@@ -467,11 +467,12 @@ public abstract class Db<T> : DbContext, IDb where T : Db<T>
 
         mb.Entity<Models.Subscription>().ToTable("Piranha_Subscriptions");
         mb.Entity<Models.Subscription>().Property(s => s.Id).IsRequired().HasMaxLength(64);
-        mb.Entity<Models.Subscription>().Property(s => s.EventType).IsRequired().HasMaxLength(64);
-        mb.Entity<Models.Subscription>().Property(s => s.Filter).HasMaxLength(256);
+        mb.Entity<Models.Subscription>().Property(s => s.EventStatus).IsRequired().HasMaxLength(64);
+        mb.Entity<Models.Subscription>().Property(s => s.EventType).IsRequired().HasMaxLength(256);
+        mb.Entity<Models.Subscription>().Property(s => s.Tags).IsRequired().HasMaxLength(256);
         mb.Entity<Models.Subscription>().Property(s => s.CallbackUrl).IsRequired().HasMaxLength(256);
         mb.Entity<Models.Subscription>().Property(s => s.Created).IsRequired();
-        mb.Entity<Models.Subscription>().HasIndex(s => new { s.EventType, s.Filter }).IsUnique();
+        mb.Entity<Models.Subscription>().HasIndex(s => new { s.EventType, s.EventStatus, s.Tags }).IsUnique();
     }
 
     /// <summary>

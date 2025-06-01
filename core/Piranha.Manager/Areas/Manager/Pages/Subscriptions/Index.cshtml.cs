@@ -13,12 +13,16 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
 
         [BindProperty]
         public string EventType { get; set; }
+
+        [BindProperty]
+        public string EventStatus { get; set; }
         
         [BindProperty]
         public string CallbackUrl { get; set; }
 
         [BindProperty]
-        public string Filter { get; set; }
+        public string Tags { get; set; }
+        
 
         [BindProperty]
         public Guid Id { get; set; } // Add this property
@@ -41,8 +45,9 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
                 {
                     Id = Id, // If empty, add; if set, update
                     EventType = EventType,
+                    EventStatus = EventStatus,
                     CallbackUrl = CallbackUrl,
-                    Filter = Filter
+                    Tags = Tags
                 };
                 await _service.SaveAsync(sub);
             }
