@@ -76,6 +76,7 @@ namespace Piranha.Repositories
                 if (dbSubscription != null)
                 {
                     dbSubscription.EventType = subscription.EventType;
+                    dbSubscription.EventStatus = subscription.EventStatus;
                     dbSubscription.Tags = subscription.Tags;
                     dbSubscription.CallbackUrl = subscription.CallbackUrl;
                 }
