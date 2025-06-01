@@ -305,6 +305,7 @@ internal sealed class MediaService : IMediaService
         {
             status = EventStatus.Create;
         }
+
         await _eventBus.Publish(new Event
         {
             Id = new Guid(),
@@ -716,7 +717,7 @@ internal sealed class MediaService : IMediaService
     /// <param name="height">Optional requested height</param>
     /// <param name="extension">Optional requested extension</param>
     /// <returns>The name</returns>
-    private string GetPublicUrl(Media media, int? width = null, int? height = null, string extension = null)
+    public string GetPublicUrl(Media media, int? width = null, int? height = null, string extension = null)
     {
         var name = GetResourceName(media, width, height, extension);
 

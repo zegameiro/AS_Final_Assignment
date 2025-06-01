@@ -10,24 +10,24 @@ namespace Piranha.Manager.Controllers
     // [AutoValidateAntiforgeryToken]
     public class SubscriptionApiController : Controller
     {
-        private readonly SubscriptionService _service;
+        private readonly IApi _api;
 
-        public SubscriptionApiController(SubscriptionService service)
+        public SubscriptionApiController(IApi api)
         {
-            _service = service;
+            _api = api;
         }
 
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var subs = await _service.GetAllAsync();
+            var subs = await _api.Subscriptions.GetAllAsync();
             return Ok(subs);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var sub = await _service.GetByIdAsync(id);
+            var sub = await _api.Subscriptions.GetByIdAsync(id);
             if (sub == null)
                 return NotFound();
             return Ok(sub);
@@ -40,14 +40,14 @@ namespace Piranha.Manager.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var saved = await _service.SaveAsync(model);
-            return Ok(saved);
+            await _api.Subscriptions.SaveAsync(model);
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _service.DeleteAsync(id);
+            await _api.Subscriptions.DeleteAsync(id);
             return Ok();
         }
     }

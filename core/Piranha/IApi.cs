@@ -8,6 +8,7 @@
  *
  */
 
+using Piranha.Events;
 using Piranha.Services;
 
 namespace Piranha;
@@ -86,4 +87,8 @@ public interface IApi : IDisposable
     /// Gets the site type service.
     /// </summary>
     ISiteTypeService SiteTypes { get; }
+
+    ISubscriptionService Subscriptions { get; }
+
+    INotificationService Notifications { get; }
 }

@@ -47,12 +47,25 @@ builder.AddPiranha(options =>
      */
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        // Allow any origin, method and header
+        policy.WithOrigins("http://localhost:3000","*")
+               .AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+app.UseCors("AllowLocalhost");
 
 app.UsePiranha(options =>
 {
@@ -72,5 +85,6 @@ app.UsePiranha(options =>
     options.UseTinyMCE();
     options.UseIdentity();
 });
+
 
 app.Run();

@@ -1,37 +1,20 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Piranha.Events;
-using Piranha.Repositories;
 using Piranha.Models;
 using System.Linq;
+using Piranha;
 
 public class EventConsumer : BackgroundService
 {
     private readonly EventBus _eventBus;
-    private readonly ISubscriptionRepository _subscriptionRepository;
-    private readonly NotificationService _notificationService;
     private static readonly List<Event> ConsumedEvents = new List<Event>();
     private static readonly object Lock = new object();
-    private readonly IMediaRepository _mediaRepository;
-    private readonly IPageRepository _pageRepository;
+    private readonly IApi _api;
 
-    public EventConsumer(
-        EventBus eventBus,
-        ISubscriptionRepository subscriptionRepository,
-        NotificationService notificationService,
-        IMediaRepository mediaRepository,
-        IPageRepository pageRepository
-    )
+    public EventConsumer(EventBus eventBus, IApi api)
     {
         _eventBus = eventBus;
-        _subscriptionRepository = subscriptionRepository;
-        _notificationService = notificationService;
-        _mediaRepository = mediaRepository;
-        _pageRepository = pageRepository;
+        _api = api;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,7 +26,7 @@ public class EventConsumer : BackgroundService
             Console.WriteLine($"[EVENT RECEIVED] Status: {@event.Status}");
 
             // Get all the subscriptions for the event type
-            var subscriptions = await _subscriptionRepository.GetByEventTypeAsync(@event.Type.ToString());
+            var subscriptions = await _api.Subscriptions.GetByEventTypeAsync(@event.Type.ToString());
         
             if (subscriptions.Any())
             {
@@ -88,36 +71,42 @@ public class EventConsumer : BackgroundService
 
                             if (@event.Type == EventType.Page)
                             {
-                                content = await _pageRepository.GetById<PageInfo>(@event.ContentId);
+                                content = await _api.Pages.GetByIdAsync<PageInfo>(@event.ContentId);
                             }
                             else if (@event.Type == EventType.Media)
                             {
-                                content = await _mediaRepository.GetById(@event.ContentId);
+
+                                content = await _api.Media.GetByIdAsync(@event.ContentId);
+                                if (content is Media media)
+                                {
+                                    // Ensure the media is fully loaded with all properties
+                                    media.PublicUrl = _api.Media.GetPublicUrl(media);
+                                }
                             }
                             try
-                            {
-                                var sendEvent = new
                                 {
-                                    @event.Id,
-                                    @event.CreatedAt,
-                                    Type = @event.Type.ToString(),
-                                    Status = @event.Status.ToString(),
-                                    @event.ContentId,
-                                    @event.Tags
-                                };
+                                    var sendEvent = new
+                                    {
+                                        @event.Id,
+                                        @event.CreatedAt,
+                                        Type = @event.Type.ToString(),
+                                        Status = @event.Status.ToString(),
+                                        @event.ContentId,
+                                        @event.Tags
+                                    };
 
-                                var payload = new
+                                    var payload = new
+                                    {
+                                        Event = sendEvent,
+                                        Content = content,
+                                    };
+                                    await _api.Notifications.NotifyAsync(subscription.CallbackUrl, payload);
+                                    Console.WriteLine($"[EVENT CONSUMER] Notified {subscription.CallbackUrl} for event status: {@event.Status}");
+                                }
+                                catch (Exception ex)
                                 {
-                                    Event = sendEvent,
-                                    Content = content,
-                                };
-                                await _notificationService.NotifyAsync(subscription.CallbackUrl, payload);
-                                Console.WriteLine($"[EVENT CONSUMER] Notified {subscription.CallbackUrl} for event status: {@event.Status}");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"[EVENT CONSUMER] Failed to notify {subscription.CallbackUrl}: {ex.Message}");
-                            }
+                                    Console.WriteLine($"[EVENT CONSUMER] Failed to notify {subscription.CallbackUrl}: {ex.Message}");
+                                }
                         }
                     }
                     else

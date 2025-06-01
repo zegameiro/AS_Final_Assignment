@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subscriptions & Live Notifications</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+    .container { max-width: 1200px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 32px 24px; }
+    h2 { margin-top: 0; color: #333; }
+    .card { background: #fafafa; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); padding: 24px 16px; margin-bottom: 32px; }
+    form { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+    form input, form select { flex: 1 1 200px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    form button { padding: 8px 16px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+    form button:hover { background: #0056b3; }
+    table { width: 100%; border-collapse: collapse; background: #fafafa; }
+    th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+    th { background: #f0f0f0; }
+    .notification { background: #e3fcec; border-left: 4px solid #28a745; padding: 10px 12px; margin-bottom: 10px; border-radius: 4px; font-size: 0.97em; }
+    .delete-btn { background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    .delete-btn:hover { background: #b52a37; }
+    @media (max-width: 700px) { .container { padding: 16px 4px; } form { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Subscriptions Card -->
+    <div class="card">
+      <h2>Your Subscriptions</h2>
+      <form id="subscriptionForm">
+        <select id="eventType" required>
+          <option value="" disabled selected>Select Event Type</option>
+          <option value="Page">Page</option>
+          <option value="Media">Media</option>
+        </select>
+        <select id="eventStatus" required>
+          <option value="" disabled selected>Select Event Status</option>
+          <option value="Create">Create</option>
+          <option value="Update">Update</option>
+          <option value="Delete">Delete</option>
+          <option value="UpdateMetaData">UpdateMetaData</option>
+        </select>
+        <input type="text" id="callbackUrl" placeholder="Callback URL" required>
+        <input type="text" id="tags" placeholder="Tags (comma separated)">
+        <button type="submit">Add Subscription</button>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>Event Type</th>
+            <th>Status</th>
+            <th>Callback URL</th>
+            <th>Tags</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="subscriptionsTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Notifications Card -->
+    <div class="card">
+      <h2>Live Notifications</h2>
+      <div id="notifications"></div>
+    </div>
+  </div>
+  <script>
+    // --- Subscriptions (local only, but synced with backend) ---
+    const apiBase = 'http://localhost:5000/manager/api/subscription';
+
+    function getDomain(url) {
+      try {
+        return new URL(url).origin;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function getLocalSubscriptions() {
+      return JSON.parse(localStorage.getItem('mySubscriptions') || '[]');
+    }
+    function setLocalSubscriptions(subs) {
+      localStorage.setItem('mySubscriptions', JSON.stringify(subs));
+    }
+     async function renderSubscriptions() {
+      const res = await fetch(apiBase);
+      const allSubs = await res.json();
+      // Only show subscriptions with callbackUrl matching this app's origin
+      const myOrigin = window.location.origin;
+      const subs = allSubs.filter(sub => getDomain(sub.callbackUrl) === myOrigin);
+
+      const tbody = document.getElementById('subscriptionsTable');
+      tbody.innerHTML = '';
+      subs.forEach((sub, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${sub.eventType}</td>
+          <td>${sub.eventStatus}</td>
+          <td>${sub.callbackUrl}</td>
+          <td>${sub.tags || ''}</td>
+          <td>
+            <button class="delete-btn" onclick="deleteSubscription('${sub.id}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    async function addSubscription(e) {
+      e.preventDefault();
+      const sub = {
+        eventType: document.getElementById('eventType').value,
+        eventStatus: document.getElementById('eventStatus').value,
+        callbackUrl: document.getElementById('callbackUrl').value,
+        tags: document.getElementById('tags').value
+      };
+      const res = await fetch(apiBase, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub)
+      });
+      if (res.ok) {
+        renderSubscriptions();
+        document.getElementById('subscriptionForm').reset();
+      } else {
+        alert('Failed to add subscription.');
+      }
+    }
+
+    async function deleteSubscription(id) {
+      if (!confirm('Delete this subscription?')) return;
+      const res = await fetch(`${apiBase}/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        renderSubscriptions();
+      } else {
+        alert('Failed to delete subscription on server.');
+      }
+    }
+    window.deleteSubscription = deleteSubscription;
+    document.getElementById('subscriptionForm').addEventListener('submit', addSubscription);
+    renderSubscriptions();
+
+    // --- Live Notifications ---
+    const socket = io();
+    const container = document.getElementById('notifications');
+    socket.on('notification', data => {
+      const div = document.createElement('div');
+      div.className = 'notification';
+      div.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      container.prepend(div);
+    });
+  </script>
+</body>
+</html>

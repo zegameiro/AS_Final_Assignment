@@ -57,6 +57,9 @@ public static class PiranhaHostingExtensions
                 endpoint.Invoke(endpoints);
             }
         });
+
+        applicationBuilder.Builder.UseCors("PiranhaCorsPolicy");
+        
         return applicationBuilder.Builder;
     }
 

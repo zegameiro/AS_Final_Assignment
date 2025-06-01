@@ -135,4 +135,6 @@ public interface IMediaService
     /// </summary>
     /// <param name="model">The media</param>
     Task DeleteFolderAsync(MediaFolder model);
+
+    string GetPublicUrl(Media media, int? width = null, int? height = null, string extension = null);
 }

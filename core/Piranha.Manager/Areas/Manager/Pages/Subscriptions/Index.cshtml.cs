@@ -7,7 +7,7 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
 {
     public class IndexModel : PageModel
     {
-        private readonly SubscriptionService _service;
+        private readonly IApi _api;
 
         public List<Subscription> Subscriptions { get; set; } = new();
 
@@ -27,14 +27,14 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
         [BindProperty]
         public Guid Id { get; set; } // Add this property
 
-        public IndexModel(SubscriptionService service)
+        public IndexModel(IApi api)
         {
-            _service = service;
+            _api = api;
         }
 
         public async Task OnGetAsync()
         {
-            Subscriptions = (await _service.GetAllAsync()).ToList();
+            Subscriptions = (await _api.Subscriptions.GetAllAsync()).ToList();
         }
 
         public async Task<IActionResult> OnPostAddOrUpdateAsync()
@@ -49,20 +49,20 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
                     CallbackUrl = CallbackUrl,
                     Tags = Tags
                 };
-                await _service.SaveAsync(sub);
+                await _api.Subscriptions.SaveAsync(sub);
             }
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(Guid id)
         {
-            await _service.DeleteAsync(id);
+            await _api.Subscriptions.DeleteAsync(id);
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAllAsync()
         {
-            await _service.DeleteAllAsync();
+            await _api.Subscriptions.DeleteAllAsync();
             return RedirectToPage();
         }
     }

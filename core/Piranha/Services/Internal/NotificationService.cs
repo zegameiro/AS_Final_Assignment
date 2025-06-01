@@ -1,11 +1,10 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
+using Piranha.Services;
 
 namespace Piranha.Events
 {
-    public class NotificationService
+    public class NotificationService : INotificationService
     {
         private readonly HttpClient _httpClient;
 

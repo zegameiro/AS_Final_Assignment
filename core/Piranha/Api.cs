@@ -96,7 +96,9 @@ public sealed class Api : IApi, IDisposable
     /// </summary>
     public ISiteTypeService SiteTypes { get; }
 
-    public NotificationService Notifications { get; }
+    public INotificationService Notifications { get; }
+
+    public ISubscriptionService Subscriptions { get; }
 
     /// <summary>
     /// Gets if the current repository has caching enabled or not.
@@ -123,6 +125,7 @@ public sealed class Api : IApi, IDisposable
         IPostTypeRepository postTypeRepository,
         ISiteRepository siteRepository,
         ISiteTypeRepository siteTypeRepository,
+        ISubscriptionRepository subscriptionRepository,
         EventBus eventBus,
         ICache cache = null,
         IStorage storage = null,
@@ -141,15 +144,17 @@ public sealed class Api : IApi, IDisposable
         PostTypes = new PostTypeService(postTypeRepository, cache);
         SiteTypes = new SiteTypeService(siteTypeRepository, cache);
         Notifications = new NotificationService(new HttpClient());
+        Subscriptions = new SubscriptionService(subscriptionRepository);
 
         // Create services with dependencies
         Content = new ContentService(contentRepository, contentFactory, Languages, cache, search);
-        Sites = new SiteService(siteRepository, contentFactory, Languages,cache);
+        Sites = new SiteService(siteRepository, contentFactory, Languages, cache);
         Aliases = new AliasService(aliasRepository, Sites, cache);
         Media = new MediaService(mediaRepository, eventBus, Params, storage, processor, cache);
         Pages = new PageService(pageRepository, contentFactory, Sites, Params, Media, eventBus, cache, search);
         Posts = new PostService(postRepository, contentFactory, Sites, Pages, Params, Media, cache, search);
         Archives = new ArchiveService(archiveRepository, Params, Posts);
+        
     }
 
     /// <summary>
