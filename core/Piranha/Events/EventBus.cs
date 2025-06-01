@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Piranha.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 

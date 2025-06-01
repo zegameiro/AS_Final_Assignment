@@ -194,7 +194,7 @@ internal sealed class MediaService : IMediaService
 
             await _eventBus.Publish(new Event
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Type = EventType.Media,
                 Status = EventStatus.UpdateMetaData,
                 CreatedAt = DateTime.Now,
@@ -316,7 +316,7 @@ internal sealed class MediaService : IMediaService
 
         await _eventBus.Publish(new Event
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             Type = EventType.Media,
             Status = status,
             CreatedAt = DateTime.Now,
@@ -531,7 +531,7 @@ internal sealed class MediaService : IMediaService
 
             await _eventBus.Publish(new Event
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Type = EventType.Media,
                 Status = EventStatus.Delete,
                 CreatedAt = DateTime.Now,

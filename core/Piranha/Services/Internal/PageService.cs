@@ -755,7 +755,7 @@ internal sealed class PageService : IPageService
                 // New page
                 await _eventBus.Publish(new Event
                 {
-                    Id = new Guid(),
+                    Id = Guid.NewGuid(),
                     Type = EventType.Page,
                     Status = EventStatus.Create,
                     Tags = model.Tags,
@@ -768,7 +768,7 @@ internal sealed class PageService : IPageService
                 // Updated page
                 await _eventBus.Publish(new Event
                 {
-                    Id = new Guid(),
+                    Id = Guid.NewGuid(),
                     Type = EventType.Page,
                     Status = EventStatus.Update,
                     Tags = model.Tags,
@@ -872,7 +872,7 @@ internal sealed class PageService : IPageService
             
             await _eventBus.Publish(new Event
             {
-                Id = new Guid(),
+                Id = Guid.NewGuid(),
                 Type = EventType.Page,
                 Status = EventStatus.Delete,
                 Tags = model.Tags,
@@ -904,7 +904,7 @@ internal sealed class PageService : IPageService
         
         await _eventBus.Publish(new Event
         {
-            Id = new Guid(),
+            Id = Guid.NewGuid(),
             Type = EventType.Page,
             Status = EventStatus.Delete,
             Tags = model.Tags,
