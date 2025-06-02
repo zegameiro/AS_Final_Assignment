@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Piranha.Models;
-using Piranha.Manager.Services;
 
 namespace Piranha.Manager.Controllers
 {
@@ -9,24 +8,24 @@ namespace Piranha.Manager.Controllers
     [ApiController]
     public class KeyApiController : Controller
     {
-        private readonly KeyService _service;
+        private readonly IApi _api;
 
-        public KeyApiController(KeyService service)
+        public KeyApiController(IApi api)
         {
-            _service = service;
+            _api = api;
         }
 
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var keys = await _service.GetAllAsync();
+            var keys = await _api.Keys.GetAllAsync();
             return Ok(keys);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var key = await _service.GetByIdAsync(id);
+            var key = await _api.Keys.GetByIdAsync(id);
             if (key == null)
                 return NotFound();
             return Ok(key);
@@ -41,15 +40,29 @@ namespace Piranha.Manager.Controllers
             if (model.Id == Guid.Empty)
                 model.Id = Guid.NewGuid();
 
-            var saved = await _service.SaveAsync(model);
-            return Ok(saved);
+            try
+            {
+                var saved = await _api.Keys.SaveAsync(model);
+                return Ok(saved);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _service.DeleteAsync(id);
-            return Ok();
+            try
+            {
+                await _api.Keys.DeleteAsync(id);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

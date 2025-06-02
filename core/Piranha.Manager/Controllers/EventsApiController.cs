@@ -13,12 +13,10 @@ namespace Piranha.Manager.Controllers
     [ApiController]
     public class EventsApiController : Controller
     {
-        private readonly KeyService _keyService;
         private readonly IApi _api;
 
-        public EventsApiController(KeyService keyService, IApi api)
+        public EventsApiController(IApi api)
         {
-            _keyService = keyService;
             _api = api;
         }
 
@@ -29,7 +27,7 @@ namespace Piranha.Manager.Controllers
             if (string.IsNullOrEmpty(apiKey))
                 return false;
 
-            var key = await _keyService.GetByIdAsync(Guid.Parse(apiKey));
+            var key = await _api.Keys.GetByIdAsync(Guid.Parse(apiKey));
             return key != null;
         }
 

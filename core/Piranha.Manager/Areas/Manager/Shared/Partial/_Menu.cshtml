@@ -24,11 +24,6 @@
                 }
             }
         }
-        <li class="nav-item@(ViewBag.MenuItem == "Events" ? " active" :"")">
-            <a href="~/manager/events" class="nav-link" tabindex="-1">
-                <i class="fas fa-bolt"></i>@Localizer.Menu["Events"]
-            </a>
-        </li>
         <li class="nav-item nav-header"><a class="navbar-text" href="@Url.Content(logout)"><i class="fas fa-power-off"></i>@Localizer.Menu["Logout"]</a></li>
     </ul>
 </nav>

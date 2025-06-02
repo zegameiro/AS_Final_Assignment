@@ -22,6 +22,8 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
 
         [BindProperty]
         public string Tags { get; set; }
+
+        public string ErrorMessage { get; set; }
         
 
         [BindProperty]
@@ -49,15 +51,40 @@ namespace Piranha.Manager.Areas.Manager.Pages.Subscriptions
                     CallbackUrl = CallbackUrl,
                     Tags = Tags
                 };
-                await _api.Subscriptions.SaveAsync(sub);
+
+                try
+                {
+                    await _api.Subscriptions.SaveAsync(sub);
+                    return RedirectToPage();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ErrorMessage = ex.Message;
+                    await OnGetAsync(); // Refresh the subscriptions list
+                    return Page();
+                }
+            } 
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Event Type and Callback URL are required.");
+                await OnGetAsync(); // Refresh the subscriptions list
+                return Page();
             }
-            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(Guid id)
         {
-            await _api.Subscriptions.DeleteAsync(id);
-            return RedirectToPage();
+            try
+            {
+                await _api.Subscriptions.DeleteAsync(id);
+                return RedirectToPage();
+            }
+            catch (InvalidOperationException ex)
+            {
+                ErrorMessage = ex.Message;
+                await OnGetAsync(); // Refresh the subscriptions list
+                return Page();
+            }
         }
 
         public async Task<IActionResult> OnPostDeleteAllAsync()

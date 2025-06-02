@@ -100,6 +100,8 @@ public sealed class Api : IApi, IDisposable
 
     public ISubscriptionService Subscriptions { get; }
 
+    public IKeyService Keys { get; }
+
     /// <summary>
     /// Gets if the current repository has caching enabled or not.
     /// </summary>
@@ -126,6 +128,7 @@ public sealed class Api : IApi, IDisposable
         ISiteRepository siteRepository,
         ISiteTypeRepository siteTypeRepository,
         ISubscriptionRepository subscriptionRepository,
+        IKeyRepository keyRepository,
         EventBus eventBus,
         ICache cache = null,
         IStorage storage = null,
@@ -145,6 +148,7 @@ public sealed class Api : IApi, IDisposable
         SiteTypes = new SiteTypeService(siteTypeRepository, cache);
         Notifications = new NotificationService(new HttpClient());
         Subscriptions = new SubscriptionService(subscriptionRepository);
+        Keys = new KeyService(keyRepository);
 
         // Create services with dependencies
         Content = new ContentService(contentRepository, contentFactory, Languages, cache, search);

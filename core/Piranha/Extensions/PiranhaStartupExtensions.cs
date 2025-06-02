@@ -37,8 +37,6 @@ public static class PiranhaStartupExtensions
 
         services.AddSingleton<IContentFactory, ContentFactory>();
         services.AddSingleton<EventBus>(sp => EventBus.CreateAsync().GetAwaiter().GetResult());
-        services.AddHttpClient<NotificationService>();
-        
         services.AddScoped<IApi, Api>();
         services.AddScoped<Config>();
         services.AddHostedService<EventConsumer>();

@@ -44,6 +44,20 @@
             $(this).find('form')[0].reset();
             $(this).find('#SubscriptionId').val('');
         });
+
+        $(document).ready(function () {
+            // Hide error alert after 4 seconds
+            setTimeout(function () {
+                var alert = document.getElementById('pageError');
+                if (alert) {
+                    alert.classList.add('hide');
+                    // Optionally remove it from DOM entirely after fade-out
+                    setTimeout(function () {
+                        alert.remove();
+                    }, 500); 
+                }
+            }, 4000);
+        });
     </script>
 }
 
@@ -64,6 +78,14 @@
 
     .btn-delete:hover i {
         color: white;
+    }
+
+    .fade-out-alert {
+        transition: opacity 0.5s ease-out;
+    }
+
+    .fade-out-alert.hide {
+        opacity: 0;
     }
 </style>
 
@@ -93,6 +115,10 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger fade-out-alert" id="pageError">@Model.ErrorMessage</div>
+                    }
                     <table class="table table-borderless table-hover">
                         <thead>
                             <tr>

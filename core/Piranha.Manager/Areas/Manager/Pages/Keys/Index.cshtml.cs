@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Piranha.Models;
-using Piranha.Manager.Services;
 
 namespace Piranha.Manager.Areas.Manager.Pages.Keys
 {
     public class IndexModel : PageModel
     {
-        private readonly KeyService _service;
+        private readonly IApi _api;
 
         public List<Key> Keys { get; set; } = new();
 
@@ -17,14 +16,18 @@ namespace Piranha.Manager.Areas.Manager.Pages.Keys
         [BindProperty]
         public string Name { get; set; }
 
-        public IndexModel(KeyService service)
+        public string ErrorMessage { get; set; }
+
+        public bool ShowModal { get; set; } = false;
+
+        public IndexModel(IApi api)
         {
-            _service = service;
+            _api = api;
         }
 
         public async Task OnGetAsync()
         {
-            Keys = (await _service.GetAllAsync()).ToList();
+            Keys = (await _api.Keys.GetAllAsync()).ToList();
         }
 
         public async Task<IActionResult> OnPostAddOrUpdateAsync()
@@ -36,20 +39,39 @@ namespace Piranha.Manager.Areas.Manager.Pages.Keys
                     Id = Id == Guid.Empty ? Guid.NewGuid() : Id,
                     Name = Name
                 };
-                await _service.SaveAsync(key);
+
+                try
+                {
+                    await _api.Keys.SaveAsync(key);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ErrorMessage = ex.Message;
+                    await OnGetAsync();
+                    return Page();
+                }
             }
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(Guid id)
         {
-            await _service.DeleteAsync(id);
-            return RedirectToPage();
+            try
+            {
+                await _api.Keys.DeleteAsync(id);
+                return RedirectToPage();
+            }
+            catch (InvalidOperationException ex)
+            {
+                ErrorMessage = ex.Message;
+                await OnGetAsync();
+                return Page();
+            }
         }
 
         public async Task<IActionResult> OnPostDeleteAllAsync()
         {
-            await _service.DeleteAllAsync();
+            await _api.Keys.DeleteAllAsync();
             return RedirectToPage();
         }
     }

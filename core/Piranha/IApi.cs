@@ -91,4 +91,6 @@ public interface IApi : IDisposable
     ISubscriptionService Subscriptions { get; }
 
     INotificationService Notifications { get; }
+
+    IKeyService Keys { get; }
 }

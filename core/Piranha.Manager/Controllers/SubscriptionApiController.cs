@@ -36,19 +36,32 @@ namespace Piranha.Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> Save([FromBody] Subscription model)
         {
-            Console.WriteLine("Saving subscription: " + model);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _api.Subscriptions.SaveAsync(model);
-            return Ok();
+            try
+            {
+                await _api.Subscriptions.SaveAsync(model);
+                return Ok(model);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _api.Subscriptions.DeleteAsync(id);
-            return Ok();
+            try
+            {
+                await _api.Subscriptions.DeleteAsync(id);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

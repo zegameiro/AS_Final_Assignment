@@ -43,11 +43,26 @@ namespace Piranha.Services
 
         public async Task SaveAsync(Subscription subscription)
         {
+            var possibleSubscription = await _repo.GetByEventTypeAsync(subscription.EventType);
+            if (possibleSubscription != null)
+            {
+                // Check if any subscription with the same event type already exists
+                foreach (var eSub in possibleSubscription)
+                {
+                    if (eSub.EventType == subscription.EventType && eSub.CallbackUrl.Contains(subscription.CallbackUrl))
+                    {
+                        throw new InvalidOperationException($"A subscription with the event type '{subscription.EventType}' and callback url '{subscription.CallbackUrl}' already exists.");
+                    }
+                }
+            }
+
             await _repo.SaveAsync(subscription);
         }
 
         public async Task DeleteAsync(Guid id)
         {
+            var subscription = await _repo.GetByIdAsync(id);
+            if (subscription == null) throw new InvalidOperationException($"No subscription found with id '{id}'.");
             await _repo.DeleteAsync(id);
         }
 
