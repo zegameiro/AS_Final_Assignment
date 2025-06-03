@@ -54,7 +54,7 @@
           <option value="UpdateMetaData">UpdateMetaData</option>
         </select>
         <input type="text" id="callbackUrl" placeholder="Callback URL" required>
-        <input type="text" id="tags" placeholder="Tags (comma separated)">
+        <input type="text" id="tags2" placeholder="Tags (comma separated)" required>
         <button type="submit">Add Subscription</button>
       </form>
       <table>
@@ -155,11 +155,12 @@
 
     async function addSubscription(e) {
       e.preventDefault();
+      console.log('Adding subscription...');
       const sub = {
         eventType: document.getElementById('eventType').value,
         eventStatus: document.getElementById('eventStatus').value,
         callbackUrl: document.getElementById('callbackUrl').value,
-        tags: document.getElementById('tags').value
+        tags: document.getElementById('tags2').value
       };
       const res = await fetch(apiBase, {
         method: 'POST',
