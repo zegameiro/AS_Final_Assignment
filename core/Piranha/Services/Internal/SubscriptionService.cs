@@ -49,7 +49,7 @@ namespace Piranha.Services
                 // Check if any subscription with the same event type already exists
                 foreach (var eSub in possibleSubscription)
                 {
-                    if (eSub.EventStatus == subscription.EventStatus && eSub.CallbackUrl.Contains(subscription.CallbackUrl))
+                    if (eSub.EventStatus == subscription.EventStatus && eSub.CallbackUrl.Contains(subscription.CallbackUrl) && eSub.Tags == subscription.Tags)
                     {
                         throw new InvalidOperationException($"A subscription with the event type '{subscription.EventType}' and callback url '{subscription.CallbackUrl}' already exists.");
                     }
