@@ -1,102 +1,139 @@
-# Welcome to Piranha.Core
+# Software Architectures Final Project
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0fa7c8bcd5234443b79b075436e92d7e)](https://www.codacy.com/gh/PiranhaCMS/piranha.core/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PiranhaCMS/piranha.core&amp;utm_campaign=Badge_Grade)
-[![CodeFactor](https://www.codefactor.io/repository/github/piranhacms/piranha.core/badge)](https://www.codefactor.io/repository/github/piranhacms/piranha.core)
-[![Sponsors](https://opencollective.com/piranhacms/tiers/sponsor/badge.svg?label=sponsor&color=brightgreen)](Sponsors)
-[![Backers](https://opencollective.com/piranhacms/tiers/backer/badge.svg?label=backer&color=brightgreen)](Backers)
-[![Gitter chat](https://badges.gitter.im/PiranhaCMS/Piranha.png)](https://gitter.im/PiranhaCMS/Piranha)
+**Contents’r’us** is a technology provider specializing in both headless and traditional Content Management Systems (CMS). Over the past several years, they’ve built a robust client base by delivering flexible, easy-to-integrate solutions for businesses of all sizes. The cornerstone of their offering is a solution derived from the open-source Piranha CMS.
 
-| Build server           | Platform     | Build status |
-|------------------------|--------------|--------------|
-| GitHub Actions         | Windows      | [![.NET Win](https://github.com/PiranhaCMS/piranha.core/actions/workflows/dotnet_win.yml/badge.svg)](https://github.com/PiranhaCMS/piranha.core/actions/workflows/dotnet_win.yml) |
-| GitHub Actions         | Linux        | [![.NET](https://github.com/PiranhaCMS/piranha.core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/PiranhaCMS/piranha.core/actions/workflows/dotnet.yml) |
-| CoverAlls              |              | [![Coverage Status](https://coveralls.io/repos/github/PiranhaCMS/piranha.core/badge.svg?branch=master&service=github&random=1)](https://coveralls.io/github/PiranhaCMS/piranha.core?branch=master) |
-| NuGet                  |              | [![NuGet](https://img.shields.io/nuget/v/Piranha.svg)](https://www.nuget.org/packages/Piranha) |
-| Crowdin (Localization) |              | [![Crowdin](https://badges.crowdin.net/piranhacms/localized.svg)](https://crowdin.com/project/piranhacms) |
+The objective of this assignment is to **analyze**, **redesign**, and **implement** architectural changes based on one of three possible scenarios, each reflecting strategic choices and long-term goals for the company. Our group choose the following scenarion:
 
-## About
+> ### **Scenario 3**: Event-Driven Extensions & Secure Integrations
+> **Vision**: Transform the CMS into a modern, **asynchronous** platform that supports inbound and outbound data flows, integrates easily with external services, and leverages secure messaging.
+> **Strategic Goals**:
+>   1. Introduce a custom publish/subscribe model for domain events (e.g., content creation, updates, deletions) - where the admins may define if a given model will be published and/or receive information through subscription.
+>   2. Support inbound events from authorized external publishers, allowing third parties to trigger CMS actions. have a way to configure the external publishers.
+>   3. Ensure on all message flows (inbound and outbound) authenticity and integrity, and provide a clear setup process for end users to configure keys, endpoints, and permissions.
 
-Piranha CMS is a decoupled, cross-platform CMS built for `.NET8` and `Entity Framework Core`. It has a modular and extensible architecture and supports a multitude of hosting and deployment scenarios.
-
-## Getting started
+## Quick Start Guide
 
 ### Prerequisites
 
-* [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download)
-* An IDE or Editor of your choice
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/en-us/download)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Node.js](https://nodejs.org/en/download/)
 
-### Create a new project from our templates
+### Setting Up the Project
+1. Clone the repository:
+```bash
+git clone git@github.com:zegameiro/AS_Final_Assignment.git
+```
 
-To use our project templates you first need to download and install them from NuGet. This can be done with:
+2. Open 2 terminal windows in one, remain in the root directory and run:
+```bash
+docker compose up --build
+```
 
-~~~ bash
-dotnet new install Piranha.Templates
-~~~
+2. Wait for the **RabbitMQ** container to start and then in the other terminal window navigate to the `/examples/MvcWeb` directory and execute the following command:
+```bash
+dotnet run --framework net9.0
+```
 
-When creating a new project with `dotnet new` you should first create a new empty folder. The default behaviour is that the new project is **named after its containing folder**.
+4. If every works correctly you should see the message in the terminal thats executing the DOTNET application:
+```bash
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: <root_path>
+```
+> This means that the application is accessible through the URL [http://localhost:5000](http://localhost:5000). If you navigate to the [localhost:5000/manager/](http://localhost:5000/manager/) you should see a login page and the credentials are:
+> - username: `admin`
+> - password: `password`
 
-> Please note that naming your project `Piranha` (even if it is a test project) will result in a circular reference error when you try to restore the packages. This is due to a limitation in `dotnet restore`.
+5. If you want to run the demo application developed, you can open another terminal window and navigate to the `/demo_app` directory and execute the following commands:
+```bash
+npm install # install dependencies
+npm start
+```
 
-After this is done you can create a new web project for razor pages with:
+6. If everything works correctly, you should see the message in the terminal that the demo application is running:
+```bash
 
-~~~ bash
-dotnet new piranha.razor
-~~~
+> demo_app@1.0.0 start
+> node server.js
 
-To read more about of our available project templates, please read more on https://piranhacms.org/docs/basics/project-templates
+Server is running on http://localhost:3000
+```
+> You can now access the demo application at [http://localhost:3000](http://localhost:3000).
 
-### Get the latest source code and get going
+## Files Changed/Added
 
-~~~
-> git clone https://github.com/PiranhaCMS/piranha.core.git
-> cd piranha.core
-> dotnet restore
-> dotnet build
-> cd examples/MvcWeb
-> dotnet run
-~~~
+- **Piranha.Data.EF**
+    - [Db.cs](/data/Piranha.Data.EF/Db.cs): Already existed;
+    - [IDd.cs](/data/Piranha.Data.EF/IDb.cs): Already existed;
+    - [PiranhaEFExtensions.cs](/data/Piranha.Data.EF/Extensions/PiranhaEFExtensions.cs): Already existed;
+    - [SubscriptionRepository.cs](/data/Piranha.Data.EF/Repositories/SubscriptionRepository.cs): New file created by our group;
+    - [KeyRepository.cs](/data/Piranha.Data.EF/Repositories/KeyRepository.cs): New file created by our group;
+    - [PageRepository.cs](/data/Piranha.Data.EF/Repositories/PageRepository.cs): Already existed;
+    - [MediaRepository.cs](/data/Piranha.Data.EF/Repositories/MediaRepository.cs): Already existed;
+    - [Media.cs](/data/Piranha.Data.EF/Data/Media.cs): Already existed;
+    - [Page.cs](/data/Piranha.Data.EF/Data/Page.cs): Already existed;
+- New Migrations were applied in the **Piranha.Data.EF.SQLite Project**
+- **Piranha**
+    - [Api.cs](/core/Piranha/Api.cs): Already existed;
+    - [App.cs](/core/Piranha/App.cs): Already existed;
+    - [PiranhaStartupExtensions.cs](/core/Piranha/Extensions/PiranhaStartupExtensions.cs): Already existed;
+    - [Subscription.cs](/core/Piranha/Models/Subscription.cs): New file created by our group;
+    - [Key.cs](/core/Piranha/Models/Key.cs): New file created by our group;
+    - [Event.cs](/core/Piranha/Models/Event.cs): New file created by our group;
+    - [MediaBase.cs](/core/Piranha/Models/MediaBase.cs): Already existed;
+    - [PageBase.cs](/core/Piranha/Models/PageBase.cs): Already existed;
+    - [ISubscriptionRepository.cs](/core/Piranha/Repositories/IRepository/ISubscriptionRepository.cs): New file created by our group;
+    - [IKeyRepository.cs](/core/Piranha/Repositories/IRepository/IKeyRepository.cs): New file created by our group;
+    - [ISubscriptionService.cs](/core/Piranha/Services/IService/ISubscriptionService.cs): New file created by our group;
+    - [IKeyService.cs](/core/Piranha/Services/IService/IKeyService.cs): New file created by our group;
+    - [INotificationService.cs](/core/Piranha/Services/IService/INotificationService.cs): New file created by our group;
+    - [SubscriptionService.cs](/core/Piranha/Services/Internal/SubscriptionService.cs): New file created by our group;
+    - [KeyService.cs](/core/Piranha/Services/Internal/KeyService.cs): New file created by our group;
+    - [NotificationService.cs](/core/Piranha/Services/Internal/NotificationService.cs): New file created by our group;
+    - [MediaService.cs](/core/Piranha/Services/Internal/MediaService.cs): Already existed;
+    - [PageService.cs](/core/Piranha/Services/Internal/PageService.cs): Already existed;
+    - [Events Directory](/core/Piranha/Events/): All the files in this directory were created by our group;
+- **Piranha.Manager**
+    - [KeyApiController.cs](/core/Piranha.Manager/Controllers/KeyApiController.cs): New file created by our group;
+    - [SubscriptionApiController.cs](/core/Piranha.Manager/Controllers/SubscriptionApiController.cs): New file created by our group;
+    - [MediaService.cs](/core/Piranha.Manager/Services/MediaService.cs): Already existed;
+    - [PageService.cs](/core/Piranha.Manager/Services/PageService.cs): Already existed;
+    - [Menu.cs](/core/Piranha.Manager/Menu.cs): Already existed;
+    - [MediaListModel.cs](/core/Piranha.Manager/Models/MediaListModel.cs): Already existed;
+    - [piranha.media.js](/core/Piranha.Manager/assets/src/js/piranha.media.js): Already existed;
+    - [piranha.pageedit.js](/core/Piranha.Manager/assets/src/js/piranha.pageedit.js): Already existed;
+    - [piranha.js](/core/Piranha.Manager/assets/dist/js/piranha.js): Already existed;
+    - [piranha.preview.js](/core/Piranha.Manager/assets/src/js/piranha.preview.js): Already existed;
+    - [_PageSettings.cshtml](/core/Piranha.Manager/Areas/Manager/Pages/Partial/_PageSettings.cshtml): Already existed;
+    - [_PreviewModal.cshtml](/core/Piranha.Manager/Areas/Manager/Shared/Partial/_PreviewModal.cshtml): Already existed;
+    - [Events.cshtml](/core/Piranha.Manager/Areas/Manager/Pages/Events.cshtml): New file created by our group;
+    - [Evets.cs](/core/Piranha.Manager/Areas/Manager/Pages/Events.cs): New file created by our group;
+    - [Subscriptions directory](/core/Piranha.Manager/Areas/Manager/Pages/Subscriptions/): All the files in this directory were created by our group;
+    - [Keys directory](/core/Piranha.Manager/Areas/Manager/Pages/Keys/): All the files in this directory were created by our group;
+- **Demo Application**
+    - [demo_app/](/demo_app/): This directory was created by our group and contains the demo application files;
 
-### Log into the Manager
+## Architecure
 
-The manager interface can be found at the URL `~/manager` with the default credentials:
+![Architecture Diagram](/docs/images/AS_Final_Assignment_arch.png)
 
-~~~
-admin / password
-~~~
+## Deliverables
 
-For production scenarios we advise you to remove this user, or change the password
-**and** update the password strength policy. More information on this can be found in
-the [official documentation here](http://piranhacms.org/docs/architecture/authentication/identity).
+- The report for the first delivery can be found [here](/docs/1st_delivery/Group_Assignment_1st_part_g04.pdf) and the presentation for the first delivery can be found [here](/docs/1st_delivery/Group_1st_Assignment_g04_presentation.pdf).
 
-### Build and update javascript/css assets
+- The report for the final and second delivery can be found [here](#) and the presentation for the final and second delivery can be found [here](/docs/2nd_delivery/AS_Final_Assignment.pdf).
 
-~~~
-> cd piranha.core/core/Piranha.Manager
-> npm install
-> gulp min:js
-> gulp min:css
-~~~
+## Authors
 
-## Backers
+- [Daniel Madureira](https://github.com/Dan1m4D)
+- [João Andrade](https://github.com/WildBunnie)
+- [José Gameiro](https://github.com/zegameiro)
+- [Tomás Victal](https://github.com/fungame2270)
 
-Support Piranha CMS with a monthly donation and help us focus on giving you even more features and better support. [Piranha CMS @ Open Collective](https://opencollective.com/piranhacms)
 
-<img src="https://opencollective.com/piranhacms/tiers/sponsor.svg?avatarHeight=36" />
-<img src="https://opencollective.com/piranhacms/tiers/backer.svg?avatarHeight=36&width=600" />
-
-## Sponsors
-
-These are our financial sponsors! You can also become a sponsor either through GitHub or [Open Collective](https://opencollective.com/piranhacms).
-
-[![Arcady](https://piranhacms.azureedge.net/uploads/672d2600-8822-4b74-bb06-392f0c4aa38d-arcady_black.png)](https://www.arcady.nl)
-
-[![Peak Crypto](https://piranhacms.azureedge.net/uploads/5b9b6a74-5cf6-456d-a8a4-5d831eed5509-peak-crypto-small.png)](https://www.peakcrypto.com/)
-
-## Code of Conduct
-
-This project has adopted the code of conduct defined by the [Contributor Covenant](http://contributor-covenant.org/) to clarify expected behavior in our community.
-For more information see the [.NET Foundation Code of Conduct](http://www.dotnetfoundation.org/code-of-conduct).
-
-## .NET Foundation
-
-This project is supported by the [.NET Foundation](http://www.dotnetfoundation.org).
