@@ -127,7 +127,7 @@ Server is running on http://localhost:3000
 
 - The report for the first delivery can be found [here](/docs/1st_delivery/Group_Assignment_1st_part_g04.pdf) and the presentation for the first delivery can be found [here](/docs/1st_delivery/Group_1st_Assignment_g04_presentation.pdf).
 
-- The report for the final and second delivery can be found [here](#) and the presentation for the final and second delivery can be found [here](/docs/2nd_delivery/AS_Final_Assignment.pdf).
+- The report for the final and second delivery can be found [here](/docs/2nd_delivery/AS_Group_Assignment_Final_Report.pdf) and the presentation for the final and second delivery can be found [here](/docs/2nd_delivery/AS_Final_Assignment.pdf).
 
 ## Authors
 
